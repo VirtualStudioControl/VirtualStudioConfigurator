@@ -1,0 +1,9 @@
+*.cover
+*.pyc
+.idea/*
+venv/*
+build/*
+dist/*
+test/*
+__pychache__/*
+*.spec
