@@ -7,3 +7,4 @@ dist/*
 test/*
 __pychache__/*
 *.spec
+*.device.json
