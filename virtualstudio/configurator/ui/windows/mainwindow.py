@@ -7,7 +7,7 @@ from PyQt5 import uic
 from ..widgets.hardwareview import HardwareViewWidget
 from ..widgets.hardware.hardwaregraphic import *
 
-from virutalstudio.common.io.configtools import *
+from virtualstudio.common.io.configtools import *
 
 DEVICES = {
     "StreamDeck": createElgatoStreamdeck(),
