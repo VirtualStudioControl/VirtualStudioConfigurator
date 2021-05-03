@@ -5,6 +5,8 @@ from PyQt5.QtGui import *
 import sys
 import traceback
 
+from virtualstudio.configurator.data import constants
+from virtualstudio.configurator.data.provider.com_data_provider import ComDataProvider
 from virtualstudio.configurator.ui.windows.mainwindow import MainWindow
 
 def darkFusion ():
@@ -34,13 +36,17 @@ def darkFusion ():
 
 if __name__ == "__main__":
     try:
-        app = QApplication(sys.argv)
-        window = MainWindow()
-        darkFusion()
-        app.setStyle('Fusion')
+        constants.DATA_PROVIDER = ComDataProvider()
+        try:
+            app = QApplication(sys.argv)
+            window = MainWindow()
+            darkFusion()
+            app.setStyle('Fusion')
 
-        window.show()
-        app.exec_()
+            window.show()
+            app.exec_()
+        finally:
+            constants.DATA_PROVIDER.close()
 
     except Exception as ex:
         print("UNHANDLED Exception Occured !")
