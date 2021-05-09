@@ -10,8 +10,11 @@
     <height>638</height>
    </rect>
   </property>
+  <property name="acceptDrops">
+   <bool>true</bool>
+  </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Virtual Studio Configurator</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -196,7 +199,15 @@
     <property name="title">
      <string>Window</string>
     </property>
-    <addaction name="actionDocks"/>
+    <widget class="QMenu" name="menuDocks">
+     <property name="title">
+      <string>Docks</string>
+     </property>
+     <addaction name="actionActions"/>
+     <addaction name="actionProfiles"/>
+     <addaction name="actionMultiaction_Order"/>
+    </widget>
+    <addaction name="menuDocks"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -213,7 +224,7 @@
    <widget class="QWidget" name="actionDock">
     <layout class="QGridLayout" name="gridLayout_2">
      <item row="0" column="0">
-      <widget class="QTreeView" name="action_list_widget">
+      <widget class="ActionView" name="action_list_widget">
        <property name="editTriggers">
         <set>QAbstractItemView::NoEditTriggers</set>
        </property>
@@ -223,11 +234,14 @@
        <property name="dragDropMode">
         <enum>QAbstractItemView::DragOnly</enum>
        </property>
+       <property name="defaultDropAction">
+        <enum>Qt::IgnoreAction</enum>
+       </property>
        <property name="alternatingRowColors">
         <bool>false</bool>
        </property>
        <property name="indentation">
-        <number>10</number>
+        <number>15</number>
        </property>
        <property name="animated">
         <bool>true</bool>
@@ -243,9 +257,28 @@
     </layout>
    </widget>
   </widget>
-  <action name="actionDocks">
+  <action name="actionActions">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
-    <string>Docks</string>
+    <string>Actions</string>
+   </property>
+  </action>
+  <action name="actionProfiles">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Profiles</string>
+   </property>
+  </action>
+  <action name="actionMultiaction_Order">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Multiaction Order</string>
    </property>
   </action>
  </widget>
@@ -254,6 +287,11 @@
    <class>HardwareViewWidget</class>
    <extends>QGraphicsView</extends>
    <header>virtualstudio.configurator.ui.widgets.hardwareview</header>
+  </customwidget>
+  <customwidget>
+   <class>ActionView</class>
+   <extends>QTreeView</extends>
+   <header>virtualstudio.configurator.ui.widgets.actions.view.actionview</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -2,7 +2,7 @@ from typing import Optional
 
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QPen, QBrush, QColor, QPainterPath
-from PyQt5.QtWidgets import QGraphicsScene
+from PyQt5.QtWidgets import QGraphicsScene, QGraphicsSceneDragDropEvent
 
 from .hardwaregraphic import *
 
@@ -54,6 +54,7 @@ class HardwareScene(QGraphicsScene):
 
         self.update()
 
+    #region Rendering
     def drawBackground(self, painter, rect):
         """
         Draws the Background for this Scene
@@ -70,3 +71,4 @@ class HardwareScene(QGraphicsScene):
             painter.setBrush(self.brushDevice)
             painter.setPen(self.pen_outline)
             painter.drawPath(path_outline.simplified())
+    #endregion

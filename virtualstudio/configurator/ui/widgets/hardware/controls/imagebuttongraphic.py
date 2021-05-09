@@ -10,7 +10,7 @@ class ImageButtonGraphic(ButtonGraphic):
         super().__init__(ident, position, size, text, parent)
 
     def getType(self):
-        return CONTROL_TYPE_IMAGEBUTTON
+        return CONTROL_TYPE_IMAGE_BUTTON
 
     def paint(self, painter, style: QStyleOptionGraphicsItem, widget=None):
         # outline

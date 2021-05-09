@@ -5,6 +5,7 @@ from ...net.com_client import ComClient
 
 from virtualstudio.common.net.protocols.virtualstudiocom import client as req
 
+
 class ComDataProvider(AbstractDataProvider):
 
     def __init__(self, coreAddress: str = "127.0.0.1", core_port: int = 4233):
@@ -14,7 +15,6 @@ class ComDataProvider(AbstractDataProvider):
 
     def listActions(self, callback: Callable[[bool, List, List], None]):
         def __wrap(msg: dict):
-            print(msg)
             callback(msg['actions_loaded'], msg['actions'], msg['categories'])
 
         self.client.sendMessageJSON(req.requestActionList(), __wrap)
