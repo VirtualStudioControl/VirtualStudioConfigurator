@@ -15,7 +15,7 @@ class RotaryEncoderGraphic(AbstractControlGraphic):
         self.brush_knob = QBrush(QColor("#FF888888"), Qt.Dense6Pattern)
 
     def getType(self):
-        return CONTROL_TYPE_ROTARYENCODER
+        return CONTROL_TYPE_ROTARY_ENCODER
 
     def toDict(self):
         dict = super().toDict()

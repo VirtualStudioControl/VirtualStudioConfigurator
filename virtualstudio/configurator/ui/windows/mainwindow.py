@@ -60,7 +60,7 @@ class MainWindow(QMainWindow):
 
         self.action_list_widget.setModel(model)
         self.action_list_widget.setUniformRowHeights(True)
-        self.action_list_widget.setSelectionMode(QAbstractItemView.NoSelection)
+        self.action_list_widget.setSelectionMode(QAbstractItemView.SingleSelection)
 
         self.action_list_widget.setItemDelegateForColumn(0, ActionWidget(self.action_list_widget, categoryIcons))
 

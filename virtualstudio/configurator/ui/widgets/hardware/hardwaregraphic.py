@@ -239,7 +239,6 @@ def createXTouchMini():
         xtouch.addItem(RotaryEncoderGraphic(controls, (i * 65, 0), (60, 60), (15, 15), (30, 30), "{}".format(controls)), layer=0)
         controls += 1
 
-
     for i in range(2):
         for j in range(8):
             xtouch.addItem(ButtonGraphic(controls, (15 + 65 * j, 80 + 40 * i), (30, 20), "{}".format(controls)), layer=0)

@@ -20,8 +20,8 @@ class ActionWidget(QStyledItemDelegate):
         for k in categoryIcons:
             self.categoryIcons[k['name']] = self.decodeIcon(k['icon'])
 
-        self.brushCathegoryBg = QBrush(QColor(53, 53, 53))
-        self.brushActionBg = QBrush(QColor(25, 25, 25))
+        self.brushCathegoryBg = QBrush(QColor(53, 53, 53, 75))
+        self.brushActionBg = QBrush(QColor(25, 25, 25, 127))
 
     def decodeIcon(self, data):
         rawIcon = base64.b64decode(data.encode("utf-8"))
@@ -43,7 +43,6 @@ class ActionWidget(QStyledItemDelegate):
         return size
 
     def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex):
-        #super(ActionWidget, self).paint(painter, option, index)
         actionData = index.data(role=DATA_ROLE_ACTION_DATA)
         if actionData is not None:
             self.paintAction(painter, option, index, actionData)
@@ -56,9 +55,10 @@ class ActionWidget(QStyledItemDelegate):
         w = option.rect.width()
         h = option.rect.height()
 
+        # Required to draw background on Drag & Drop
         painter.setBrush(self.brushActionBg)
         painter.setPen(Qt.NoPen)
-        painter.drawRect(x, y, x + w, y + h)
+        painter.drawRect(x, y, w, h)
 
         icon_offset = (h - 32) // 2
 
@@ -69,7 +69,9 @@ class ActionWidget(QStyledItemDelegate):
         font: QFont = painter.font()
         font.setBold(False)
         font.setItalic(False)
+
         painter.setFont(font)
+
         text_offset = ((h/2)) // 2
 
         painter.drawText(x + 32 + (icon_offset * 2), y + text_offset, w - (x + 32 + (icon_offset * 3)), 20, 0, action.name)
@@ -88,15 +90,19 @@ class ActionWidget(QStyledItemDelegate):
         w = option.rect.width()
         h = option.rect.height()
 
-        painter.setBrush(self.brushCathegoryBg)
+        #painter.setBrush(self.brushCathegoryBg)
         painter.setPen(Qt.NoPen)
-        painter.drawRect(x, y, x + w, y + h)
+        #painter.drawRect(x, y, w, h)
 
         icon_offset = (h - 32) // 2
 
         painter.setBrush(Qt.NoBrush)
-        painter.drawImage(x + icon_offset, y + icon_offset, self.categoryIcons[categoryData["name"]], 0, 0, 32, 32)
-        painter.drawRect(x + icon_offset, y + icon_offset, 32, 32)
+
+        if categoryData["name"] in self.categoryIcons:
+            painter.drawImage(x + icon_offset, y + icon_offset, self.categoryIcons[categoryData["name"]], 0, 0, 32, 32)
+        else:
+            painter.setPen(QPen(Qt.white))
+            painter.drawRect(x + icon_offset, y + icon_offset, 32, 32)
 
         painter.setPen(QPen(Qt.white))
         font: QFont = painter.font()
@@ -108,10 +114,8 @@ class ActionWidget(QStyledItemDelegate):
         font.setBold(False)
         painter.setFont(font)
 
-
     def createEditor(self, widget, style, index):
         return None
 
     def setModelData(self, editor: QWidget, model: QAbstractItemModel, index: QModelIndex):
         pass
-        #model.setData(index, editor.toPlainText())

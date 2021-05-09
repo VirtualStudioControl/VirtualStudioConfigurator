@@ -30,6 +30,10 @@ class ButtonGraphic(AbstractControlGraphic):
         painter.setPen(self.pen_outline)
         painter.drawPath(path_outline.simplified())
 
+        if self.action is not None:
+            painter.setBrush(self.brushAction)
+            painter.drawPath(path_outline.simplified())
+
         if self.isActive:
             painter.setBrush(self.brushActive)
             painter.drawPath(path_outline.simplified())
