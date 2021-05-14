@@ -2,6 +2,7 @@ from typing import Dict, Any, Optional, List
 
 from .controls.abstractcontrolgraphic import AbstractControlGraphic
 from .controls.buttongraphic import ButtonGraphic
+from .controls.imagebuttongraphic import ImageButtonGraphic
 from .controls.rotaryencodergraphic import RotaryEncoderGraphic
 from .controls.fadergraphic import FaderGraphic
 
@@ -45,7 +46,6 @@ class HardwareGraphic:
                 layers[i].append(item.toDict())
         r['layers'] = layers
         return r
-
 
     def onUpdate(self):
         if self.updated is not None:
@@ -106,7 +106,7 @@ def createElgatoStreamdeck():
 
     for i in range(3):
         for j in range(5):
-            streamDeck.addItem(ButtonGraphic(i*10+j, (45*j, 45*i), (40, 40), "({} , {})".format(j, i)))
+            streamDeck.addItem(ImageButtonGraphic(i*10+j, (45*j, 45*i), (40, 40), "({} , {})".format(j, i)))
 
     streamDeck.computeBB()
     return streamDeck
@@ -117,7 +117,7 @@ def createElgatoStreamdeckMini():
 
     for i in range(2):
         for j in range(3):
-            streamDeck.addItem(ButtonGraphic(i*10+j, (45*j, 45*i), (40, 40), "({} , {})".format(j, i)))
+            streamDeck.addItem(ImageButtonGraphic(i*10+j, (45*j, 45*i), (40, 40), "({} , {})".format(j, i)))
 
     streamDeck.computeBB()
     return streamDeck
@@ -128,7 +128,7 @@ def createElgatoStreamdeckXL():
 
     for i in range(4):
         for j in range(8):
-            streamDeck.addItem(ButtonGraphic(i*10+j, (45*j, 45*i), (40, 40), "({} , {})".format(j, i)))
+            streamDeck.addItem(ImageButtonGraphic(i*10+j, (45*j, 45*i), (40, 40), "({} , {})".format(j, i)))
 
     streamDeck.computeBB()
     return streamDeck
@@ -225,6 +225,7 @@ def createXTouchCompact():
 
     xtouch.computeBB()
     return xtouch
+
 
 def createXTouchMini():
     xtouch = HardwareGraphic(name="Behringer X Touch Mini", bezel=20, borderrounding=20, layers=2,

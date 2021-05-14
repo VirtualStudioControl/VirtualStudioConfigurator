@@ -7,6 +7,7 @@ import traceback
 
 from virtualstudio.configurator.data import constants
 from virtualstudio.configurator.data.provider.com_data_provider import ComDataProvider
+from virtualstudio.configurator.history.history import History
 from virtualstudio.configurator.ui.windows.mainwindow import MainWindow
 
 def darkFusion ():
@@ -15,21 +16,21 @@ def darkFusion ():
 
     :return: None
     """
-    dark_palette = QPalette()
+    dark_palette = QPalette(QColor(53, 53, 53))
 
-    dark_palette.setColor(QPalette.Window, QColor(53, 53, 53))
-    dark_palette.setColor(QPalette.WindowText, Qt.white)
-    dark_palette.setColor(QPalette.Base, QColor(25, 25, 25))
-    dark_palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
-    dark_palette.setColor(QPalette.ToolTipBase, Qt.white)
-    dark_palette.setColor(QPalette.ToolTipText, Qt.white)
-    dark_palette.setColor(QPalette.Text, Qt.white)
-    dark_palette.setColor(QPalette.Button, QColor(53, 53, 53))
-    dark_palette.setColor(QPalette.ButtonText, Qt.white)
-    dark_palette.setColor(QPalette.BrightText, Qt.red)
-    dark_palette.setColor(QPalette.Link, QColor(42, 130, 218))
-    dark_palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
-    dark_palette.setColor(QPalette.HighlightedText, Qt.black)
+#    dark_palette.setColor(QPalette.Window, QColor(53, 53, 53))
+#    dark_palette.setColor(QPalette.WindowText, Qt.white)
+#    dark_palette.setColor(QPalette.Base, QColor(25, 25, 25))
+#    dark_palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
+#    dark_palette.setColor(QPalette.ToolTipBase, Qt.white)
+#    dark_palette.setColor(QPalette.ToolTipText, Qt.white)
+#    dark_palette.setColor(QPalette.Text, Qt.white)
+#    dark_palette.setColor(QPalette.Button, QColor(53, 53, 53))
+#    dark_palette.setColor(QPalette.ButtonText, Qt.white)
+#    dark_palette.setColor(QPalette.BrightText, Qt.red)
+#    dark_palette.setColor(QPalette.Link, QColor(42, 130, 218))
+#    dark_palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
+#    dark_palette.setColor(QPalette.HighlightedText, Qt.black)
 
     qApp.setPalette(dark_palette)
 
@@ -37,6 +38,7 @@ def darkFusion ():
 if __name__ == "__main__":
     try:
         constants.DATA_PROVIDER = ComDataProvider()
+        constants.HISTORY = History()
         try:
             app = QApplication(sys.argv)
             window = MainWindow()

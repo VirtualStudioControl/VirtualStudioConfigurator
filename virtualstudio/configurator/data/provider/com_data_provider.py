@@ -1,4 +1,4 @@
-from typing import List, Callable
+from typing import List, Callable, Dict
 
 from .abstract_data_provider import AbstractDataProvider
 from ...net.com_client import ComClient
@@ -12,6 +12,12 @@ class ComDataProvider(AbstractDataProvider):
         super().__init__()
         self.client = ComClient(coreAddress, core_port)
         self.client.start()
+
+    def getProfileSet(self, deviceID: str, callback: Callable[[Dict], None]):
+        def __wrap(msg: dict):
+            callback(msg['profileset'])
+
+        self.client.sendMessageJSON(req.requestProfileSet(deviceID), __wrap)
 
     def listActions(self, callback: Callable[[bool, List, List], None]):
         def __wrap(msg: dict):

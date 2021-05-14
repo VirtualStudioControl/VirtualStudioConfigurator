@@ -30,6 +30,7 @@ class ActionView(QTreeView):
             option.features = option.features & ~ option.Alternate
         else:
             option.features = option.features | option.Alternate
+            option.palette.setBrush(QPalette.AlternateBase, option.palette.window())
 
         # Set Selection color to transparent
         option.palette.setColor(QPalette.Highlight, QColor("#00000000"))

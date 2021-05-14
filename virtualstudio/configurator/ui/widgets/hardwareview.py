@@ -1,11 +1,19 @@
-from typing import Optional
+from typing import Optional, Dict, Any
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
+from ..tools.widgettools import setComboIndexSilent
+
 from .hardware.hardwarescene import HardwareScene
 from .hardware.hardwaregraphic import HardwareGraphic
+from ...data import constants
+from ...history.actions.action_value_changed import ActionValueChanged
+
+SETTING_LAYER_INDEX = "layerIndex"
+
+WIDGET_LAYER_COMBO = "layerCombo"
 
 class HardwareViewWidget(QGraphicsView):
 
@@ -22,8 +30,11 @@ class HardwareViewWidget(QGraphicsView):
 
         self.hardware: Optional[HardwareGraphic] = None
         self.hardware_widget: Optional[QStackedWidget] = None
+        self.hardwarePageDict = {}
+        self.hardware_widget_dict: Dict[str, Dict[str, QWidget]] = {}
 
-        self.devicePageDict = {}
+        self.device: Optional[Dict[str, Any]] = None
+        self.deviceSettingsDict: Optional[Dict[str, Any]] = {}
 
         self.scene = HardwareScene()
         self.setScene(self.scene)
@@ -42,41 +53,76 @@ class HardwareViewWidget(QGraphicsView):
     def setHardwareOptionWidget(self, widget : QWidget):
         self.hardware_widget = widget
 
-    def setHardware(self, hardware: HardwareGraphic):
+    def setHardware(self, hardware: HardwareGraphic, device: dict):
         self.hardware = hardware
+        self.device = device
         self.scene.setHardware(hardware)
         self.generateHardwareWidgetContent()
 
     def generateHardwareWidgetContent(self):
-        if self.hardware.name in self.devicePageDict:
-            self.hardware_widget.setCurrentIndex(self.devicePageDict[self.hardware.name])
+        if self.hardware.name in self.hardwarePageDict:
+            self.hardware_widget.setCurrentIndex(self.hardwarePageDict[self.hardware.name])
+            self.setDeviceSettings()
             return
 
         widget = QWidget()
         layout: QGridLayout = QGridLayout()
 
         layout.addWidget(QWidget(), 0, 0)
+        settings = {}
+        widgetdict: Dict[str, QWidget] = {}
 
         if self.hardware.layers > 1:
             layerLabel = QLabel()
             layerLabel.setText("Layer")
             layout.addWidget(layerLabel, 1, 0)
 
-            layout_combo = QComboBox()
+            layer_combo = QComboBox()
 
             for layer in range(self.hardware.layers):
-                layout_combo.addItem(self.hardware.getNameOfLayer(layer))
-            layout.addWidget(layout_combo, 1, 1)
-            layout_combo.currentIndexChanged.connect(self.onLayerChanged)
+                layer_combo.addItem(self.hardware.getNameOfLayer(layer))
+            layout.addWidget(layer_combo, 1, 1)
+            layer_combo.currentIndexChanged.connect(self.onLayerChanged)
+
+            widgetdict[WIDGET_LAYER_COMBO] = layer_combo
+            settings[SETTING_LAYER_INDEX] = 0
 
         layout.setContentsMargins(0,0,0,0)
 
         widget.setLayout(layout)
-        self.devicePageDict[self.hardware.name] = self.hardware_widget.insertWidget(len(self.devicePageDict), widget)
-        self.hardware_widget.setCurrentIndex(self.devicePageDict[self.hardware.name])
+
+        self.deviceSettingsDict[self.device['identifier']] = settings
+        self.hardware_widget_dict[self.hardware.name] = widgetdict
+        self.hardwarePageDict[self.hardware.name] = self.hardware_widget.insertWidget(len(self.hardwarePageDict), widget)
+        self.hardware_widget.setCurrentIndex(self.hardwarePageDict[self.hardware.name])
         self.hardware_widget.update()
 
+    def setDeviceSettings(self):
+        settings = self.deviceSettingsDict[self.device['identifier']]
+        widgets = self.hardware_widget_dict[self.hardware.name]
+
+        if SETTING_LAYER_INDEX in settings:
+            self.__onLayerChangedSilent(settings[SETTING_LAYER_INDEX], widgets[WIDGET_LAYER_COMBO])
+
+
     def onLayerChanged(self, index):
+        def __wrapAction(index: int):
+            self.__onLayerChangedSilent(index, self.hardware_widget_dict[self.hardware.name][WIDGET_LAYER_COMBO])
+        try:
+            constants.HISTORY.addItem(
+                ActionValueChanged(func=__wrapAction,
+                                   old=self.deviceSettingsDict[self.device['identifier']][SETTING_LAYER_INDEX],
+                                   new=index))
+        except Exception as ex:
+            print(ex)
+        self.__onLayerChanged(index)
+
+    def __onLayerChangedSilent(self, index, widget):
+        setComboIndexSilent(widget, index)
+        self.__onLayerChanged(index)
+
+    def __onLayerChanged(self, index):
+        self.deviceSettingsDict[self.device['identifier']][SETTING_LAYER_INDEX] = index
         self.hardware.setActiveLayer(index)
 
     def wheelEvent(self, event:QWheelEvent):
