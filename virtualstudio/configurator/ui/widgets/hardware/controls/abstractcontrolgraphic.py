@@ -5,8 +5,12 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
 from virtualstudio.common.structs.action.abstract_action import *
-from virtualstudio.configurator.data.mimetypes import MIME_TYPE_ACTIONID
+from .....data.mimetypes import MIME_TYPE_ACTIONID
 from .....data.actions.action_manager import getActionByID
+from .....data import constants
+
+from .....history.actions.action_value_changed import ActionValueChanged
+
 from .....structs.action import Action
 
 
@@ -34,8 +38,8 @@ class AbstractControlGraphic(QGraphicsItem):
 
         self.action: Optional[Action] = None
 
-        self.setFlag(self.ItemIsSelectable, self.selectable)
-        self.setFlag(self.ItemIsMovable, False)
+        self.setFlag(QGraphicsItem.ItemIsSelectable, self.selectable)
+        self.setFlag(QGraphicsItem.ItemIsMovable, False)
         self.setAcceptDrops(self.selectable)
 
     def getType(self):
@@ -61,6 +65,20 @@ class AbstractControlGraphic(QGraphicsItem):
             self.size[1]
         ).normalized()
 
+    def setAction(self, action: Action):
+        try:
+            constants.HISTORY.addItem(ActionValueChanged(func=self.__setAction, old=self.action, new=action))
+        except Exception as ex:
+            print(ex)
+
+        self.__setAction(action)
+
+    def __setAction(self, action: Action):
+        self.action = action
+        self.update()
+
+    #region Drag & Drop
+
     def dragEnterEvent(self, event: QGraphicsSceneDragDropEvent):
         if not self.selectable:
             event.ignore()
@@ -79,8 +97,9 @@ class AbstractControlGraphic(QGraphicsItem):
     def dropEvent(self, event: QGraphicsSceneDragDropEvent):
         if MIME_TYPE_ACTIONID in event.mimeData().formats():
             actionID = bytes(event.mimeData().data(MIME_TYPE_ACTIONID)).decode('utf-8')
-            self.action = getActionByID(actionID)
-            self.update()
+            self.setAction(getActionByID(actionID))
             event.accept()
             return
         event.ignore()
+
+    #endregion

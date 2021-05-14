@@ -6,14 +6,11 @@ class AbstractDataProvider:
     def __init__(self):
         pass
 
-    def listActions(self, callback: Callable):
+    def getProfileSet(self, deviceID: str, callback: Callable):
         pass
 
-    def getActionIcon(self, callback: Callable, identifier: str):
+    def listActions(self, callback: Callable[[bool, List, List], None]):
         pass
 
-    def getCategoryIcon(self, callback: Callable, category: List[str]):
-        pass
-
-    def listDevices(self, callback: Callable):
+    def listDevices(self, callback: Callable[[bool, List], None]):
         pass
