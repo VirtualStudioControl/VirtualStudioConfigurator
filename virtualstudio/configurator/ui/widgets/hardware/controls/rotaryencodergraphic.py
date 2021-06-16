@@ -7,7 +7,7 @@ from .abstractcontrolgraphic import *
 
 class RotaryEncoderGraphic(AbstractControlGraphic):
 
-    def __init__(self, ident, position, size, inner_pos, inner_size, text: str = None, parent: QWidget = None):
+    def __init__(self, ident: int, position, size, inner_pos, inner_size, text: str = None, parent: QWidget = None):
         super().__init__(ident, position, size, text, parent)
         self.inner_size = inner_size
         self.inner_pos = inner_pos
@@ -39,7 +39,7 @@ class RotaryEncoderGraphic(AbstractControlGraphic):
         painter.setPen(self.pen_outline)
         painter.drawPath(path_outline)
 
-        if self.isSelected():
+        if self.isSelected:
             painter.setBrush(self.brushSelected)
             painter.drawPath(path_outline.simplified())
 

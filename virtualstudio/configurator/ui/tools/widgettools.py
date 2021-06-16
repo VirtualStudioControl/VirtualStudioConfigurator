@@ -17,6 +17,29 @@ def _silence(method, widget, value):
 #endregion
 
 #region Widget Tools
+
+def setValueQRadioButton(widget: QRadioButton, value: bool):
+    """
+    Sets the Value of the given QRadioButton
+
+    :param widget: QRadioButton to set the value of
+    :param value: Value to set
+    :return: None
+    """
+    widget.setChecked(value)
+
+
+def setValueQRadioButtonSilent(widget: QRadioButton, value: bool):
+    """
+    Sets the Value of the given QRadioButton
+
+    :param widget: QRadioButton to set the value of
+    :param value: Value to set
+    :return: None
+    """
+    _silence(setValueQRadioButton, widget, value)
+
+
 def setValueQSpin(widget, value):
     """
     Sets the Value of the given QSpin

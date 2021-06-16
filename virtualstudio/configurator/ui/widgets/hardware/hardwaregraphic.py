@@ -1,5 +1,6 @@
 from typing import Dict, Any, Optional, List
 
+from virtualstudio.common.structs.profile.profile import Profile
 from .controls.abstractcontrolgraphic import AbstractControlGraphic
 from .controls.buttongraphic import ButtonGraphic
 from .controls.imagebuttongraphic import ImageButtonGraphic
@@ -72,7 +73,7 @@ class HardwareGraphic:
             layer = self.activeLayer
         return self.items[layer].values()
 
-    def getItem(self, ident, layer=None):
+    def getItem(self, ident: int, layer=None):
         if layer is not None:
             return self.items[layer][ident]
         for lay in range(self.layers):
@@ -85,6 +86,13 @@ class HardwareGraphic:
             layer = self.activeLayer
         self.items[layer][item.ident] = item
         self.onUpdate()
+
+    def setProfile(self, profile: Profile):
+        for item in self.getItems():
+            if item.ident in profile.actions:
+                item._setAction(profile.actions[item.ident])
+            else:
+                item._setAction(None)
 
     def computeBB(self):
         x, y, w, h = (0, 0, 0, 0)

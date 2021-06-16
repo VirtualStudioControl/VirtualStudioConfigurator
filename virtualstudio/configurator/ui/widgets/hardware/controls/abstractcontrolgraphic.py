@@ -5,6 +5,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
 from virtualstudio.common.structs.action.abstract_action import *
+from virtualstudio.common.structs.action.action_info import ActionInfo
 from .....data.mimetypes import MIME_TYPE_ACTIONID
 from .....data.actions.action_manager import getActionByID
 from .....data import constants
@@ -13,12 +14,16 @@ from .....history.actions.action_value_changed import ActionValueChanged
 
 from .....structs.action import Action
 
+from virtualstudio.configurator.profilemanager import profileset_manager as profilemanager
+from virtualstudio.configurator.data import constants
+from virtualstudio.configurator.data.tools import datarequests
+
 
 class AbstractControlGraphic(QGraphicsItem):
 
-    def __init__(self, ident, position, size, text: str = None, parent: QWidget = None):
+    def __init__(self, ident: int, position, size, text: str = None, parent: QWidget = None):
         super().__init__(parent)
-        self.ident = ident
+        self.ident: int = ident
 
         self.position = position
         self.size = size
@@ -30,15 +35,16 @@ class AbstractControlGraphic(QGraphicsItem):
             self.text = str(ident)
 
         self.selectable = True
+        self.isSelected = False
 
         self.pen_outline = QPen(Qt.black)
         self.brushBackground = QBrush(QColor("#FFFFFF"), Qt.SolidPattern)
         self.brushAction = QBrush(QColor("#8800FF00"), Qt.Dense3Pattern)
         self.brushSelected = QBrush(QColor("#8800AAFF"), Qt.Dense4Pattern)
 
-        self.action: Optional[Action] = None
+        self.action: Optional[ActionInfo] = None
 
-        self.setFlag(QGraphicsItem.ItemIsSelectable, self.selectable)
+        self.setFlag(QGraphicsItem.ItemIsSelectable, False)
         self.setFlag(QGraphicsItem.ItemIsMovable, False)
         self.setAcceptDrops(self.selectable)
 
@@ -53,7 +59,6 @@ class AbstractControlGraphic(QGraphicsItem):
 
     def setSelectable(self, value: bool):
         self.selectable = value
-        self.setFlag(self.ItemIsSelectable, self.selectable)
         self.setAcceptDrops(self.selectable)
 
     def boundingRect(self) -> QRectF:
@@ -65,15 +70,15 @@ class AbstractControlGraphic(QGraphicsItem):
             self.size[1]
         ).normalized()
 
-    def setAction(self, action: Action):
+    def setAction(self, action: ActionInfo):
         try:
-            constants.HISTORY.addItem(ActionValueChanged(func=self.__setAction, old=self.action, new=action))
+            constants.HISTORY.addItem(ActionValueChanged(func=self._setAction, old=self.action, new=action))
         except Exception as ex:
             print(ex)
 
-        self.__setAction(action)
+        self._setAction(action)
 
-    def __setAction(self, action: Action):
+    def _setAction(self, action: Optional[ActionInfo]):
         self.action = action
         self.update()
 
@@ -97,7 +102,20 @@ class AbstractControlGraphic(QGraphicsItem):
     def dropEvent(self, event: QGraphicsSceneDragDropEvent):
         if MIME_TYPE_ACTIONID in event.mimeData().formats():
             actionID = bytes(event.mimeData().data(MIME_TYPE_ACTIONID)).decode('utf-8')
-            self.setAction(getActionByID(actionID))
+            action = getActionByID(actionID)
+
+            actionInfo = ActionInfo(action.ident, self.ident, self.getType())
+            profileName = profilemanager.getCurrentProfileName()
+            profile = profilemanager.getProfileByName(profileName)
+            if action is not None:
+                profile.setAction(self.ident, actionInfo)
+            else:
+                profile.removeAction(self.ident)
+
+            datarequests.updateProfile(profile)
+
+            self.setAction(actionInfo)
+
             event.accept()
             return
         event.ignore()

@@ -6,3 +6,5 @@ from ..history.history import History
 DATA_PROVIDER: Optional[AbstractDataProvider] = None
 
 HISTORY: Optional[History] = None
+
+CURRENT_DEVICE = None
