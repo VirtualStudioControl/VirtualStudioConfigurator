@@ -7,7 +7,7 @@ from .abstractcontrolgraphic import *
 
 class FaderGraphic(AbstractControlGraphic):
 
-    def __init__(self, ident, position, size, knob_size, knob_value, line_offset, text: str = None, parent: QWidget = None):
+    def __init__(self, ident: int, position, size, knob_size, knob_value, line_offset, text: str = None, parent: QWidget = None):
         super().__init__(ident, position, size, text, parent)
         self.knob_size = knob_size
         self.knob_value = knob_value
@@ -46,7 +46,7 @@ class FaderGraphic(AbstractControlGraphic):
         painter.setBrush(self.brushBackground)
         painter.drawPath(path_outline)
 
-        if self.isSelected():
+        if self.isSelected:
             painter.setBrush(self.brushSelected)
             painter.drawPath(path_outline.simplified())
 

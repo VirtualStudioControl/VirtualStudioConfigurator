@@ -7,7 +7,7 @@ from .abstractcontrolgraphic import *
 
 class ButtonGraphic(AbstractControlGraphic):
 
-    def __init__(self, ident, position, size, text: str = None, parent: QWidget = None):
+    def __init__(self, ident: int, position, size, text: str = None, parent: QWidget = None):
         super().__init__(ident, position, size, text, parent)
 
         self.isActive = False
@@ -38,6 +38,6 @@ class ButtonGraphic(AbstractControlGraphic):
             painter.setBrush(self.brushActive)
             painter.drawPath(path_outline.simplified())
 
-        if self.isSelected():
+        if self.isSelected:
             painter.setBrush(self.brushSelected)
             painter.drawPath(path_outline.simplified())

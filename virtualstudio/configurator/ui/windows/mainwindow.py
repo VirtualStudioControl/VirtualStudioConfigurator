@@ -4,17 +4,23 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5 import uic
 
-from ..tools.widgettools import setComboTextSilent
+from ...profilemanager import profileset_manager as ProfilesetManager
+from ...devicemanager import devicemanager
+
+from ..tools.widgettools import setComboTextSilent, setComboIndexSilent
 
 from ..widgets.actions.model.actionmodel import ActionModel
 from ..widgets.actions.editor.actionwidget import ActionWidget
 from ..widgets.docks.closeabledock import CloseableDock
-from ..widgets.hardwareview import HardwareViewWidget, QStandardItemModel
+from ..widgets.hardwareview import HardwareViewWidget
 from ..widgets.hardware.hardwaregraphic import *
+from ..widgets.actionparameterwidgets.imagebutton_image_preview_widget import ImageButtonImagePreviewWidget
+from ..widgets.actionparameterwidgets.state_display_widget import StateDisplayWidget
 
-from virtualstudio.configurator.data import constants
+from ...data import constants
 
 from virtualstudio.common.io.configtools import *
+from virtualstudio.common.structs.action.abstract_action import *
 from ...history.actions.abstract_history_action import AbstractHistoryAction
 from ...history.actions.action_value_changed import ActionValueChanged
 
@@ -28,6 +34,15 @@ DEVICES = {
 }
 
 DEVICE_DATA_ROLE = Qt.UserRole
+
+CONTROL_WIDGET_TYPES = {
+    CONTROL_TYPE_NONE: 0,
+    CONTROL_TYPE_ANY: 0,
+    CONTROL_TYPE_BUTTON: 1,
+    CONTROL_TYPE_IMAGE_BUTTON: 2,
+    CONTROL_TYPE_FADER: 3,
+    CONTROL_TYPE_ROTARY_ENCODER: 4
+}
 
 class MainWindow(QMainWindow):
 
@@ -44,8 +59,22 @@ class MainWindow(QMainWindow):
 
         self.device_param_widget: Optional[QStackedWidget] = None
 
+        self.actionSettingsRootWidget: Optional[QStackedWidget] = None
+        self.controlConfigurationRoot: Optional[QStackedWidget] = None
+
+        self.state_display_widget: Optional[StateDisplayWidget] = None
+
+        self.label_control_button_identifier: Optional[QLabel] = None
+
+        self.label_control_imagebutton_identifier: Optional[QLabel] = None
+        self.action_imagebutton_image_preview: Optional[ImageButtonImagePreviewWidget] = None
+
+        self.label_control_fader_identifier: Optional[QLabel] = None
+        self.label_control_rotaryencoder_identifier: Optional[QLabel] = None
+
         self.actionSettingWidget: Optional[QWidget] = None
         self.action_list_widget: Optional[QTreeView] = None
+
 
         uic.loadUi('GUI/windows/mainwindow.ui', self)
 
@@ -155,6 +184,13 @@ class MainWindow(QMainWindow):
 
     #region Interactive Widgets
     def setupInteractiveWidgets(self):
+        self.button_addprofile.clicked.connect(self._onAddProfileClicked)
+
+        self.combo_profile.currentTextChanged.connect(self._onProfileChanged)
+
+        self.actionSettingsRootWidget.setCurrentIndex(0)
+        self.deviceView.setSelectionChangeHandler(self.__onActionItemSelectionChanged)
+
         constants.DATA_PROVIDER.listDevices(self._setupDevices)
         constants.DATA_PROVIDER.listActions(self._setupActions)
 
@@ -173,6 +209,36 @@ class MainWindow(QMainWindow):
 
         self.action_list_widget.setItemDelegateForColumn(0, ActionWidget(self.action_list_widget, categoryIcons))
 
+    def __onActionItemSelectionChanged(self, control: AbstractControlGraphic):
+        if control is not None and control.action is not None:
+            self.controlConfigurationRoot.setCurrentIndex(CONTROL_WIDGET_TYPES[control.getType()])
+            self.updateControlWidgets(control)
+            self.actionSettingsRootWidget.setCurrentIndex(1)
+        else:
+            self.actionSettingsRootWidget.setCurrentIndex(0)
+
+    def updateControlWidgets(self, control: AbstractControlGraphic):
+
+        #region General
+        self.state_display_widget.updateWidget(control.action)
+        #endregion
+
+        #region BUTTON
+        self.label_control_button_identifier.setText(str(control.ident))
+        #endregion
+
+        # region ImageButton
+        self.label_control_imagebutton_identifier.setText(str(control.ident))
+        #endregion
+
+        # region Fader
+        self.label_control_fader_identifier.setText(str(control.ident))
+        #endregion
+
+        # region Rotary Encoder
+        self.label_control_rotaryencoder_identifier.setText(str(control.ident))
+        #endregion
+
     #endregion
 
     #region Devices
@@ -181,7 +247,8 @@ class MainWindow(QMainWindow):
             return
 
         for d in devices:
-            self.combo_device.addItem("{} {}".format(d['manufacturer'], d['name']), userData=d)
+            devicemanager.appendDevice(d)
+            self.combo_device.addItem("{} {}".format(d['manufacturer'], d['name']), userData=d["identifier"])
         self.combo_device.update()
 
         self.combo_device.currentTextChanged.connect(self.__setHardwareOnce)
@@ -192,7 +259,8 @@ class MainWindow(QMainWindow):
 
     def onHardwareChanged(self, text=""):
         try:
-            constants.HISTORY.addItem(ActionValueChanged(func=self.__setHardwareSilent, old=self.combo_device_prev_value, new=text))
+            constants.HISTORY.addItem(ActionValueChanged(func=self.__setHardwareSilent,
+                                                         old=self.combo_device_prev_value, new=text))
         except Exception as ex:
             print(ex)
 
@@ -209,22 +277,73 @@ class MainWindow(QMainWindow):
 
     def __setHardware(self, text: str):
         device = self.combo_device.currentData(DEVICE_DATA_ROLE)
-        constants.DATA_PROVIDER.getProfileSet(device["identifier"], self.onProfileSetUpdate)
-        self.deviceView.setHardware(DEVICES[text], device)
+        constants.CURRENT_DEVICE = device
+        ProfilesetManager.expectNewProfileSet()
+        #ProfilesetManager.setCurrentProfile(device["currentProfile"])
+        constants.DATA_PROVIDER.getProfileSet(device, self.onProfileSetUpdate)
+        self.deviceView.setHardware(DEVICES[text], devicemanager.getDevice(device))
 
     #endregion
     #region Profiles
 
+    def _onProfileChanged(self, text):
+        previousProfileName = ProfilesetManager.getCurrentProfileName()
+        try:
+            constants.HISTORY.addItem(ActionValueChanged(func=self.__changeProfile,
+                                                         old=previousProfileName, new=text))
+        except Exception as ex:
+            print(ex)
+        self.__profileChanged(text)
+
+    def __profileChanged(self, profileName):
+        def __profileChangedCB(success):
+            pass
+        constants.DATA_PROVIDER.setCurrentProfile(constants.CURRENT_DEVICE, profileName,
+                                                  __profileChangedCB)
+        ProfilesetManager.setCurrentProfile(profileName)
+        data = self.combo_device.currentData(DEVICE_DATA_ROLE)
+        devicemanager.setCurrentProfile(devicemanager.getDevice(data), profileName)
+        self.deviceView.updateProfile()
+
+    def __changeProfile(self, profileName):
+        setComboTextSilent(self.combo_profile, profileName)
+        self.__profileChanged(profileName)
+
     def onProfileSetUpdate(self, profileset: dict):
-        print(profileset)
+
+        ProfilesetManager.loadProfileSetFromDict(profileset)
         self.__setProfileCombobox(profileset["profiles"])
+        ProfilesetManager.setCurrentProfile(devicemanager.getDevice(constants.CURRENT_DEVICE)["currentProfile"])
+        self.__changeProfile(devicemanager.getDevice(constants.CURRENT_DEVICE)["currentProfile"])
 
     def __setProfileCombobox(self, profiles: list):
-        for i in range(self.combo_profile.count()):
-            self.combo_profile.removeItem(i)
+        self.combo_profile.clear()
+        self.combo_profile.setInsertPolicy(QComboBox.InsertPolicy.InsertAlphabetically)
+
+        def __sort(e):
+            return e["name"]
+
+        profiles.sort(key=__sort)
 
         for profile in profiles:
             self.combo_profile.addItem("{}".format(profile['name']), userData=profile)
 
+        currentProfile = ProfilesetManager.getCurrentProfileName()
+        setComboIndexSilent(self.combo_profile, max(0, self.combo_profile.findText(currentProfile)))
+
+    def _onAddProfileClicked(self, checked=False):
+        name, doProceed = QInputDialog.getText(self, "Add Profile", "Name", flags=Qt.Popup)
+
+        if not doProceed:
+            return
+
+        device = devicemanager.getDevice(self.combo_device.currentData(DEVICE_DATA_ROLE))
+        family = "{} {}".format(device["manufacturer"], device["name"])
+        profile = Profile(hardwareFamily=family, name=name)
+        constants.DATA_PROVIDER.addProfile(device["identifier"], profile, self.__onProfileAdded)
+
+    def __onProfileAdded(self, profileset: dict, success: bool):
+        if success:
+            self.onProfileSetUpdate(profileset)
     #endregion
     #endregion

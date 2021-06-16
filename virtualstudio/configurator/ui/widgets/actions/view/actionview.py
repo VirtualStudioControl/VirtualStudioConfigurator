@@ -10,7 +10,6 @@ class ActionView(QTreeView):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        print("Init Action View")
 
     def startDrag(self, supportedActions: Union[Qt.DropActions, Qt.DropAction]) -> None:
         super().startDrag(Qt.DropAction.CopyAction)

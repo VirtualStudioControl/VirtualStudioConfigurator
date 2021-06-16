@@ -14,8 +14,6 @@ class Action:
         self.ident = values['id']
         self.allowedControls = values['allowedControls']
 
-        print(values)
-
         self.rawIcon = base64.b64decode(values["icon"].encode("utf-8"))
         self.iconImage = QImage()
         self.iconImage.loadFromData(self.rawIcon)

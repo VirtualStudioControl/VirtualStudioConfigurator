@@ -1,4 +1,4 @@
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Callable
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -6,10 +6,11 @@ from PyQt5.QtGui import *
 
 from ..tools.widgettools import setComboIndexSilent
 
-from .hardware.hardwarescene import HardwareScene
+from .hardware.hardwarescene import HardwareScene, AbstractControlGraphic
 from .hardware.hardwaregraphic import HardwareGraphic
 from ...data import constants
 from ...history.actions.action_value_changed import ActionValueChanged
+from ...profilemanager import profileset_manager as profilemanager
 
 SETTING_LAYER_INDEX = "layerIndex"
 
@@ -50,13 +51,23 @@ class HardwareViewWidget(QGraphicsView):
         # enable dropping
         self.setAcceptDrops(True)
 
+    def updateProfile(self):
+        currentProfile = profilemanager.getProfileByName(profilemanager.getCurrentProfileName())
+
+        if self.hardware is not None:
+            self.hardware.setProfile(currentProfile)
+
     def setHardwareOptionWidget(self, widget : QWidget):
         self.hardware_widget = widget
+
+    def setSelectionChangeHandler(self, handler: Callable[[Optional[AbstractControlGraphic]], None]):
+        self.scene.selectionManager.setSelectionChangeHandler(handler)
 
     def setHardware(self, hardware: HardwareGraphic, device: dict):
         self.hardware = hardware
         self.device = device
         self.scene.setHardware(hardware)
+        self.scene.selectionManager.setDevice(device["identifier"])
         self.generateHardwareWidgetContent()
 
     def generateHardwareWidgetContent(self):
@@ -103,7 +114,6 @@ class HardwareViewWidget(QGraphicsView):
 
         if SETTING_LAYER_INDEX in settings:
             self.__onLayerChangedSilent(settings[SETTING_LAYER_INDEX], widgets[WIDGET_LAYER_COMBO])
-
 
     def onLayerChanged(self, index):
         def __wrapAction(index: int):
