@@ -50,6 +50,9 @@ class StateDisplayWidget(QWidget):
 
         return __onToggle
 
+    def setStateChangedCallback(self, callback: Optional[Callable[[int], None]]):
+        self.stateChangedCallback = callback
+
     def setState(self, state):
         setValueQRadioButton(self.radioButtons[state], True)
 
@@ -74,24 +77,18 @@ class StateDisplayWidget(QWidget):
         self.__updateRadioButtons.emit(statecount)
 
     def __updateRadioBtns(self, statecount: int):
-        try:
-            if statecount <= 1:
-                statecount = 0
+        if statecount <= 1:
+            statecount = 0
+        if statecount >= len(self.radioButtons):
+            self.createStateRadios(statecount)
 
-            if statecount >= len(self.radioButtons):
-                self.createStateRadios(statecount)
+        if len(self.radioButtons) > 0:
+            setValueQRadioButtonSilent(self.radioButtons[0], True)
 
-            if len(self.radioButtons) > 0:
-                setValueQRadioButtonSilent(self.radioButtons[0], True)
+        for i in range(len(self.radioButtons)):
+            if i < statecount:
+                self.radioButtons[i].show()
+            else:
+                self.radioButtons[i].hide()
 
-            for i in range(len(self.radioButtons)):
-                if i < statecount:
-                    self.radioButtons[i].show()
-                else:
-                    self.radioButtons[i].hide()
-
-            self.update()
-        except Exception as ex:
-            import traceback
-            print(ex)
-            traceback.print_exc()
+        self.update()

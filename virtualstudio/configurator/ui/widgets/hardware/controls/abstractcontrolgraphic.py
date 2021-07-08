@@ -6,6 +6,7 @@ from PyQt5.QtGui import *
 
 from virtualstudio.common.structs.action.abstract_action import *
 from virtualstudio.common.structs.action.action_info import ActionInfo
+from virtualstudio.common.tools import actiondatatools, icontools
 from .....data.mimetypes import MIME_TYPE_ACTIONID
 from .....data.actions.action_manager import getActionByID
 from .....data import constants
@@ -40,6 +41,9 @@ class AbstractControlGraphic(QGraphicsItem):
         self.pen_outline = QPen(Qt.black)
         self.brushBackground = QBrush(QColor("#FFFFFF"), Qt.SolidPattern)
         self.brushAction = QBrush(QColor("#8800FF00"), Qt.Dense3Pattern)
+
+        self.pen_selected = QPen(QColor("#FF00AAFF"))
+        self.pen_selected.setWidth(3)
         self.brushSelected = QBrush(QColor("#8800AAFF"), Qt.Dense4Pattern)
 
         self.action: Optional[ActionInfo] = None
@@ -80,7 +84,23 @@ class AbstractControlGraphic(QGraphicsItem):
 
     def _setAction(self, action: Optional[ActionInfo]):
         self.action = action
+        if self.action is not None:
+            iconData = actiondatatools.getValueOrDefault(self.action.actionParams,
+                                                                actiondatatools.KEY_STATE_IMAGEBUTTON_IMAGE,
+                                                                0, None)
+            if iconData is not None and iconData != "":
+                decoded = icontools.decodeIconData(iconData)
+                img = QImage()
+                img.loadFromData(decoded)
+                self.setIconImage(img)
+            else:
+                self.setIconImage(None)
+        else:
+            self.setIconImage(None)
         self.update()
+
+    def setIconImage(self, iconImage: Optional[QImage]):
+        pass
 
     #region Drag & Drop
 

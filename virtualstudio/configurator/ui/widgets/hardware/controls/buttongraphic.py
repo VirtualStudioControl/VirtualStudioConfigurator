@@ -39,5 +39,6 @@ class ButtonGraphic(AbstractControlGraphic):
             painter.drawPath(path_outline.simplified())
 
         if self.isSelected:
-            painter.setBrush(self.brushSelected)
+            painter.setBrush(Qt.NoBrush)
+            painter.setPen(self.pen_selected)
             painter.drawPath(path_outline.simplified())

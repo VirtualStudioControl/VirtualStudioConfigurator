@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 
+
 #region TOOLS
 def _silence(method, widget, value):
     """
@@ -16,8 +17,20 @@ def _silence(method, widget, value):
     widget.blockSignals(False)
 #endregion
 
-#region Widget Tools
+#region Widget Value Setter
 
+#region QButton
+
+def setButtonChecked(widget: QAbstractButton, value: bool):
+    widget.setChecked(value)
+
+
+def setButtonCheckedSilent(widget: QAbstractButton, value: bool):
+    _silence(setButtonChecked, widget, value)
+
+#endregion
+
+#region QRadioButton
 def setValueQRadioButton(widget: QRadioButton, value: bool):
     """
     Sets the Value of the given QRadioButton
@@ -38,8 +51,9 @@ def setValueQRadioButtonSilent(widget: QRadioButton, value: bool):
     :return: None
     """
     _silence(setValueQRadioButton, widget, value)
+#endregion
 
-
+#region QSpin
 def setValueQSpin(widget, value):
     """
     Sets the Value of the given QSpin
@@ -50,6 +64,7 @@ def setValueQSpin(widget, value):
     """
     widget.setValue(value)
 
+
 def setValueQSpinSilent (widget, value):
     """
     Sets the Value of the given QSpin without triggering signals
@@ -59,7 +74,9 @@ def setValueQSpinSilent (widget, value):
     :return: None
     """
     _silence(setValueQSpin, widget, value)
+#endregion
 
+#region QSlider
 def setValueQSlider(widget, value):
     """
     Sets the Value of the given QSlider Widget
@@ -70,6 +87,7 @@ def setValueQSlider(widget, value):
     """
     widget.setValue(value)
 
+
 def setValueQSliderSilent (widget, value):
     """
     Sets the Value of the given QSlider Widget without triggering signals
@@ -79,7 +97,9 @@ def setValueQSliderSilent (widget, value):
     :return: None
     """
     _silence(setValueQSpin, widget, value)
+#endregion
 
+#region QLineEdit
 def setValueQLineEdit(widget, value):
     """
     Sets the Value of the given QLineEdit Widget
@@ -90,6 +110,7 @@ def setValueQLineEdit(widget, value):
     """
     widget.setText(value)
 
+
 def setValueQLineEditSilent(widget, value):
     """
     Sets the Value of the given QLineEdit Widget without triggering signals
@@ -99,7 +120,9 @@ def setValueQLineEditSilent(widget, value):
     :return: None
     """
     _silence(setValueQLineEdit, widget, value)
+#endregion
 
+#region Combobox
 def setComboIndex(widget, value):
     """
     Sets the active index of the given QComboBox Widget
@@ -110,6 +133,7 @@ def setComboIndex(widget, value):
     """
     widget.setCurrentIndex(value)
 
+
 def setComboIndexSilent(widget, value):
     """
     Sets the active index of the given QComboBox Widget without triggering signals
@@ -119,6 +143,7 @@ def setComboIndexSilent(widget, value):
     :return: None
     """
     _silence(setComboIndex, widget, value)
+
 
 def setComboText(widget, value, dict=None):
     """
@@ -135,6 +160,7 @@ def setComboText(widget, value, dict=None):
         return
     widget.setCurrentText(dict[value])
 
+
 def setComboTextSilent(widget, value):
     """
     Sets the text of the given QComboBox Widget
@@ -145,6 +171,30 @@ def setComboTextSilent(widget, value):
     """
     _silence(setComboText, widget, value)
 
+
+def setComboFont(widget: QFontComboBox, value: QFont):
+    """
+    Sets the active index of the given QComboBox Widget
+
+    :param widget: QComboBox to set the index of
+    :param value: Index to set
+    :return: None
+    """
+    widget.setCurrentFont(value)
+
+
+def setComboFontSilent(widget: QFontComboBox, value: QFont):
+    """
+    Sets the active index of the given QComboBox Widget without triggering signals
+
+    :param widget: QFontComboBox to set the index of
+    :param value: Index to set
+    :return: None
+    """
+    _silence(setComboFont, widget, value)
+#endregion
+
+#region QPlainTextEdit
 def setPlainTextEdit(widget : QPlainTextEdit, value):
     """
     Sets the content of the given QPlainTextEdit Widget
@@ -155,6 +205,7 @@ def setPlainTextEdit(widget : QPlainTextEdit, value):
     """
     widget.setPlainText(value)
 
+
 def setPlainTextEditSilent(widget, value):
     """
     Sets the content of the given QPlainTextEdit Widget
@@ -164,6 +215,9 @@ def setPlainTextEditSilent(widget, value):
     :return: None
     """
     _silence(setPlainTextEdit, widget, value)
+#endregion
+
+#region KeySequenceEdit
 
 def setKeySequenceEdit (widget : QKeySequenceEdit, value : QKeySequence):
     """
@@ -173,6 +227,10 @@ def setKeySequenceEdit (widget : QKeySequenceEdit, value : QKeySequence):
     :return: None
     """
     widget.setKeySequence(value)
+
+#endregion
+
+#endregion
 
 #region Widget Setup
 
@@ -185,7 +243,5 @@ def setComboboxListValuesFromDict(widget, values):
     :return: None
     """
     widget.addItems(list(values.keys()))
-
-#endregion
 
 #endregion

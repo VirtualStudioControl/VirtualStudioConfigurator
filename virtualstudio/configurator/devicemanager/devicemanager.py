@@ -1,3 +1,5 @@
+from typing import Tuple
+
 DEVICES = {}
 
 
@@ -37,3 +39,27 @@ def getCurrentProfile(device: dict):
 
 def setCurrentProfile(device: dict, profileName: str):
     device["currentProfile"] = profileName
+
+
+def hasParameters(device):
+    return ("parameters" in device)
+
+
+def getParameterIconResolution(device, default: Tuple[int, int] = None):
+    if not hasParameters(device):
+        return default
+
+    if "icon_resolution" not in device["parameters"]:
+        return default
+
+    return device["parameters"]["icon_resolution"]
+
+
+def getParameterIconFormat(device, default: str = "JPEG"):
+    if not hasParameters(device):
+        return default
+
+    if "icon_format" not in device["parameters"]:
+        return default
+
+    return device["parameters"]["icon_format"]

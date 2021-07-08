@@ -27,8 +27,11 @@ class ImageButtonImagePreviewWidget(QGraphicsView):
         # enable dropping
         self.setAcceptDrops(True)
 
-    def updateWidget(self, action: ActionInfo):
-        self.scene.setAction(action)
-
     def setState(self, state: int):
         self.scene.setState(state)
+
+    def onDeviceChanged(self):
+        self.scene.onDeviceChanged()
+
+    def updateImage(self):
+        self.scene.redrawImage()

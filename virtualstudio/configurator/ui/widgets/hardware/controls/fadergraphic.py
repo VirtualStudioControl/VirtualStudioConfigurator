@@ -47,7 +47,8 @@ class FaderGraphic(AbstractControlGraphic):
         painter.drawPath(path_outline)
 
         if self.isSelected:
-            painter.setBrush(self.brushSelected)
+            painter.setBrush(Qt.NoBrush)
+            painter.setPen(self.pen_selected)
             painter.drawPath(path_outline.simplified())
 
         painter.drawPath(path_line)
