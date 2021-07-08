@@ -1,4 +1,4 @@
-from typing import List, Callable, Dict
+from typing import List, Callable, Dict, Any
 
 from virtualstudio.common.structs.action.action_info import ActionInfo
 from virtualstudio.common.structs.profile.profile import Profile
@@ -15,6 +15,9 @@ class AbstractDataProvider:
         pass
 
     def getActionStates(self, action: ActionInfo, callback: Callable[[int, bool], None]):
+        pass
+
+    def getActionWidget(self, action: ActionInfo, callback: Callable[[Any, str, bool], None]):
         pass
 
     #endregion

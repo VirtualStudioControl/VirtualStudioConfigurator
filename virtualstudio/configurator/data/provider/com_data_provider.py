@@ -1,4 +1,4 @@
-from typing import List, Callable, Dict
+from typing import List, Callable, Dict, Any
 
 from virtualstudio.common.structs.action.action_info import ActionInfo
 from virtualstudio.common.structs.profile.profile import Profile
@@ -28,6 +28,12 @@ class ComDataProvider(AbstractDataProvider):
             callback(msg['states'], msg['success'])
 
         self.client.sendMessageJSON(req.getActionStates(action), __wrap)
+
+    def getActionWidget(self, action: ActionInfo, callback: Callable[[Any, str, bool], None]):
+        def __wrap(msg: dict):
+            callback(msg['widgetdata'], msg['widgetdatatype'], msg['success'])
+
+        self.client.sendMessageJSON(req.getActionWidget(action), __wrap)
 
     #endregion
 
