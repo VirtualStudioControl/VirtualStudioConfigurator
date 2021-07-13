@@ -114,7 +114,7 @@ def createElgatoStreamdeck():
 
     for i in range(3):
         for j in range(5):
-            streamDeck.addItem(ImageButtonGraphic(i*10+j, (45*j, 45*i), (40, 40), "({} , {})".format(j, i)))
+            streamDeck.addItem(ImageButtonGraphic(i*5+j, (45*j, 45*i), (40, 40), "({} , {})".format(j, i)))
 
     streamDeck.computeBB()
     return streamDeck
@@ -125,7 +125,7 @@ def createElgatoStreamdeckMini():
 
     for i in range(2):
         for j in range(3):
-            streamDeck.addItem(ImageButtonGraphic(i*10+j, (45*j, 45*i), (40, 40), "({} , {})".format(j, i)))
+            streamDeck.addItem(ImageButtonGraphic(i*3+j, (45*j, 45*i), (40, 40), "({} , {})".format(j, i)))
 
     streamDeck.computeBB()
     return streamDeck
@@ -136,7 +136,7 @@ def createElgatoStreamdeckXL():
 
     for i in range(4):
         for j in range(8):
-            streamDeck.addItem(ImageButtonGraphic(i*10+j, (45*j, 45*i), (40, 40), "({} , {})".format(j, i)))
+            streamDeck.addItem(ImageButtonGraphic(i*8+j, (45*j, 45*i), (40, 40), "({} , {})".format(j, i)))
 
     streamDeck.computeBB()
     return streamDeck
@@ -146,6 +146,32 @@ def createXTouchCompact():
     xtouch = HardwareGraphic(name="Behringer X Touch Compact", bezel=20, borderrounding=20, layers=2, layerNames=['A', 'B'])
 
     controls = 0
+
+    for i in range(3):
+        for j in range(8):
+            xtouch.addItem(ButtonGraphic(controls, (15 + 65 * j, 80 + 40 * i), (30, 20), "{}".format(controls)), layer=0)
+            controls += 1
+
+    for i in range(8):
+        xtouch.addItem(ButtonGraphic(controls, (15 + 65 * i, 520), (30, 20), "{}".format(controls)), layer=0)
+        controls += 1
+
+    xtouch.addItem(ButtonGraphic(controls, (545, 520), (30, 20), "{}".format(controls)), layer=0)
+    controls += 1
+
+    for i in range(3):
+        for j in range(2):
+            xtouch.addItem(ButtonGraphic(controls, (620 + 65 * j, 310 + 70 * i), (30, 20), "{}".format(controls)), layer=0)
+            controls += 1
+
+    isActive = True
+    for i in range(2):
+        btn = ButtonGraphic(997 + i, (620 + 65 * i, 520), (30, 20), "{}".format(controls))
+        btn.isActive = isActive
+        btn.setSelectable(False)
+        isActive = not isActive
+        xtouch.addItem(btn, layer=0)
+        #controls += 1
 
     for i in range(8):
         xtouch.addItem(FaderGraphic(controls, (65 * i, 200), (60, 300), (30, 60), 0, 10, "{}".format(controls)), layer=0)
@@ -163,31 +189,35 @@ def createXTouchCompact():
             xtouch.addItem(RotaryEncoderGraphic(controls, (605 + 65 * j, 70 * i), (60, 60), (15, 15), (30, 30), "{}".format(controls)), layer=0)
             controls += 1
 
+    # Layer B
+
     for i in range(3):
         for j in range(8):
-            xtouch.addItem(ButtonGraphic(controls, (15 + 65 * j, 80 + 40 * i), (30, 20), "{}".format(controls)), layer=0)
+            xtouch.addItem(ButtonGraphic(controls, (15 + 65 * j, 80 + 40 * i), (30, 20), "{}".format(controls)), layer=1)
             controls += 1
 
     for i in range(8):
-        xtouch.addItem(ButtonGraphic(controls, (15 + 65 * i, 520), (30, 20), "{}".format(controls)), layer=0)
+        xtouch.addItem(ButtonGraphic(controls, (15 + 65 * i, 520), (30, 20), "{}".format(controls)), layer=1)
         controls += 1
 
-    xtouch.addItem(ButtonGraphic(controls, (545, 520), (30, 20), "{}".format(controls)), layer=0)
+    xtouch.addItem(ButtonGraphic(controls, (545, 520), (30, 20), "{}".format(controls)), layer=1)
     controls += 1
-
-    isActive = True
-    for i in range(2):
-        btn = ButtonGraphic(controls, (620 + 65 * i, 520), (30, 20), "{}".format(controls))
-        btn.isActive = isActive
-        btn.setSelectable(False)
-        isActive = not isActive
-        xtouch.addItem(btn, layer=0)
-        controls += 1
 
     for i in range(3):
         for j in range(2):
-            xtouch.addItem(ButtonGraphic(controls, (620 + 65 * j, 310 + 70 * i), (30, 20), "{}".format(controls)), layer=0)
+            xtouch.addItem(ButtonGraphic(controls, (620 + 65 * j, 310 + 70 * i), (30, 20), "{}".format(controls)), layer=1)
             controls += 1
+
+    isActive = False
+    for i in range(2):
+        btn = ButtonGraphic(999 + i, (620 + 65 * i, 520), (30, 20), "{}".format(controls))
+        btn.isActive = isActive
+        btn.setSelectable(False)
+        isActive = not isActive
+        xtouch.addItem(btn, layer=1)
+        #controls += 1
+
+    xtouch.computeBB()
 
     for i in range(8):
         xtouch.addItem(FaderGraphic(controls, (65 * i, 200), (60, 300), (30, 60), 0, 10, "{}".format(controls)), layer=1)
@@ -205,33 +235,7 @@ def createXTouchCompact():
             xtouch.addItem(RotaryEncoderGraphic(controls, (605 + 65 * j, 70 * i), (60, 60), (15, 15), (30, 30), "{}".format(controls)), layer=1)
             controls += 1
 
-    for i in range(3):
-        for j in range(8):
-            xtouch.addItem(ButtonGraphic(controls, (15 + 65 * j, 80 + 40 * i), (30, 20), "{}".format(controls)), layer=1)
-            controls += 1
 
-    for i in range(8):
-        xtouch.addItem(ButtonGraphic(controls, (15 + 65 * i, 520), (30, 20), "{}".format(controls)), layer=1)
-        controls += 1
-
-    xtouch.addItem(ButtonGraphic(controls, (545, 520), (30, 20), "{}".format(controls)), layer=1)
-    controls += 1
-
-    isActive = False
-    for i in range(2):
-        btn = ButtonGraphic(controls, (620 + 65 * i, 520), (30, 20), "{}".format(controls))
-        btn.isActive = isActive
-        btn.setSelectable(False)
-        isActive = not isActive
-        xtouch.addItem(btn, layer=1)
-        controls += 1
-
-    for i in range(3):
-        for j in range(2):
-            xtouch.addItem(ButtonGraphic(controls, (620 + 65 * j, 310 + 70 * i), (30, 20), "{}".format(controls)), layer=1)
-            controls += 1
-
-    xtouch.computeBB()
     return xtouch
 
 

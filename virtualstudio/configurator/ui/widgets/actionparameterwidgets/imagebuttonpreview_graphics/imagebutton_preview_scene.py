@@ -4,6 +4,7 @@ from PyQt5.QtCore import Qt, QObject, QRectF, QBuffer
 from PyQt5.QtGui import QBrush, QImage, QColor, QFont, QPainter, QPen
 from PyQt5.QtWidgets import QGraphicsScene
 
+from virtualstudio.common.io import filewriter
 from virtualstudio.common.io.filewriter import readFileBinary
 
 from virtualstudio.common.tools import actiondatatools as actionTools, actiondatatools
@@ -36,6 +37,7 @@ class ImagebuttonPreviewScene(QGraphicsScene):
         self.currentImage: Optional[QImage] = None
         self.iconImage: QImage = QImage(64, 64, QImage.Format_RGB32)
         self.iconFormat: str = ""
+        self.iconFlip: Tuple[bool, bool] = (False, False)
         self.showText: bool = True
         self.currentText: str = ""
         self.currentFont: Optional[QFont] = None
@@ -48,14 +50,14 @@ class ImagebuttonPreviewScene(QGraphicsScene):
         self.updateImageFromAction()
 
     def onDeviceChanged(self):
-        print("Device Changed")
         device = devicemanager.getDevice(constants.CURRENT_DEVICE)
 
         if devicemanager.hasParameters(device):
 
             iconResolution = devicemanager.getParameterIconResolution(device, default=(64, 64))
             self.iconFormat = devicemanager.getParameterIconFormat(device, default="JPEG")
-            print(iconResolution, self.iconFormat)
+            self.iconFlip = devicemanager.getParameterIconFlip(device, default=(False, False))
+
             try:
                 self.iconImage = QImage(*iconResolution, QImage.Format_RGB32)
             except Exception as ex:
@@ -193,7 +195,10 @@ class ImagebuttonPreviewScene(QGraphicsScene):
         painter.end()
 
         iconBuffer = QBuffer()
-        self.iconImage.save(iconBuffer, self.iconFormat)
+
+        mirrored = self.iconImage.mirrored(*self.iconFlip)
+
+        mirrored.save(iconBuffer, self.iconFormat)
 
         actionTools.setValue(data=constants.SELECTED_CONTROL.action.actionParams,
                              key=actionTools.KEY_STATE_IMAGEBUTTON_IMAGE,
