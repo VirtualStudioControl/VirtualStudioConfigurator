@@ -63,3 +63,14 @@ def getParameterIconFormat(device, default: str = "JPEG"):
         return default
 
     return device["parameters"]["icon_format"]
+
+
+def getParameterIconFlip(device, default: Tuple[bool, bool] = (False, False)):
+    if not hasParameters(device):
+        return default
+
+    if "icon_flip" not in device["parameters"]:
+        return default
+
+    return device["parameters"]["icon_flip"]
+
