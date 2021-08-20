@@ -10,6 +10,7 @@ from virtualstudio.common.tools import actiondatatools, icontools
 from .....data.mimetypes import MIME_TYPE_ACTIONID
 from .....data.actions.action_manager import getActionByID
 from .....data import constants
+from .....devicemanager import devicemanager
 
 from .....history.actions.action_value_changed import ActionValueChanged
 
@@ -124,8 +125,10 @@ class AbstractControlGraphic(QGraphicsItem):
             actionID = bytes(event.mimeData().data(MIME_TYPE_ACTIONID)).decode('utf-8')
             action = getActionByID(actionID)
 
-            actionInfo = ActionInfo(action.ident, self.ident, self.getType())
             profileName = profilemanager.getCurrentProfileName()
+            deviceFamily = devicemanager.getFamily(devicemanager.getDevice(constants.CURRENT_DEVICE))
+            actionInfo = ActionInfo(action.ident, self.ident, self.getType(), profileName=profileName, deviceFamily=deviceFamily)
+
             profile = profilemanager.getProfileByName(profileName)
             if action is not None:
                 profile.setAction(self.ident, actionInfo)

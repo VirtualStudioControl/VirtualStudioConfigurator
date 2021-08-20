@@ -20,6 +20,9 @@ class AbstractDataProvider:
     def getActionWidget(self, action: ActionInfo, callback: Callable[[Any, str, bool], None]):
         pass
 
+    def setActionData(self, action: ActionInfo, data: dict, callback: Callable[[bool], None]):
+        pass
+
     #endregion
 
     def listDevices(self, callback: Callable[[bool, List], None]):

@@ -28,6 +28,8 @@ def getName(device: dict):
 def getManufacturer(device: dict):
     return device["manufacturer"]
 
+def getFamily(device: dict):
+    return "{} {}".format(getManufacturer(device), getName(device))
 
 def getIdentifier(device: dict):
     return device["identifier"]
@@ -43,7 +45,6 @@ def setCurrentProfile(device: dict, profileName: str):
 
 def hasParameters(device):
     return ("parameters" in device)
-
 
 def getParameterIconResolution(device, default: Tuple[int, int] = None):
     if not hasParameters(device):

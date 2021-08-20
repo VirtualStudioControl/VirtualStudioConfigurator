@@ -39,11 +39,17 @@ class RotaryEncoderGraphic(AbstractControlGraphic):
         painter.setPen(self.pen_outline)
         painter.drawPath(path_outline)
 
+        if self.action is not None:
+            painter.setBrush(self.brushAction)
+            painter.drawPath(path_outline.simplified())
+
         if self.isSelected:
             painter.setBrush(Qt.NoBrush)
             painter.setPen(self.pen_selected)
             painter.drawPath(path_outline.simplified())
 
         painter.setPen(self.pen_outline)
+        painter.setBrush(self.brushBackground)
+        painter.drawPath(path_inner)
         painter.setBrush(self.brush_knob)
         painter.drawPath(path_inner)

@@ -40,7 +40,6 @@ DEVICE_DATA_ROLE = Qt.UserRole
 
 CONTROL_WIDGET_TYPES = {
     CONTROL_TYPE_NONE: 0,
-    CONTROL_TYPE_ANY: 0,
     CONTROL_TYPE_BUTTON: 1,
     CONTROL_TYPE_IMAGE_BUTTON: 2,
     CONTROL_TYPE_FADER: 3,
@@ -246,7 +245,7 @@ class MainWindow(QMainWindow):
 
     def __onStateChanged(self, state: int):
         try:
-            self.upadateControlWidgetState()
+            self.updateControlWidgetState()
             self.action_imagebutton_image_preview.setState(state)
         except Exception as ex:
             import traceback
@@ -274,6 +273,13 @@ class MainWindow(QMainWindow):
         self.label_control_imagebutton_font_outline.colorChanged.connect(self.onImagebuttonFontOutlineChanged)
 
         self.state_display_widget.setStateChangedCallback(self.__onStateChanged)
+
+    def sendActionStateData(self, action: ActionInfo):
+        def __setDataCB(success: bool):
+            pass
+        constants.DATA_PROVIDER.setActionData(action, {'states': action.actionParams['states']}, __setDataCB)
+
+
     #region Imagebutton control Handlers
     def onChooseImagebuttonImage(self, checked=False):
         path = QFileDialog.getOpenFileName(self, "Select Image", constants.IMAGEDIALOG_LAST_PATH, constants.FILTER_FILEDIALOG_IMAGEFILES)[0]
@@ -292,6 +298,10 @@ class MainWindow(QMainWindow):
                                      self.state_display_widget.currentState)
             self.action_imagebutton_image_preview.updateImage()
 
+            self.sendActionStateData(constants.SELECTED_CONTROL.action)
+
+
+
         #TODO: Use better (per State) History Setter
         constants.HISTORY.addItem(ActionValueChanged(func=__set,
                                                      old=constants.IMAGEDIALOG_LAST_PATH,
@@ -306,6 +316,7 @@ class MainWindow(QMainWindow):
                                  value,
                                  self.state_display_widget.currentState)
             self.action_imagebutton_image_preview.updateImage()
+            self.sendActionStateData(constants.SELECTED_CONTROL.action)
 
         def __history(value: bool):
             setButtonCheckedSilent(self.label_control_imagebutton_showtext, value)
@@ -327,6 +338,7 @@ class MainWindow(QMainWindow):
                                      text,
                                      self.state_display_widget.currentState)
             self.action_imagebutton_image_preview.updateImage()
+            self.sendActionStateData(constants.SELECTED_CONTROL.action)
 
         def __history(text: str):
             setPlainTextEditSilent(self.label_control_imagebutton_text, text)
@@ -353,6 +365,7 @@ class MainWindow(QMainWindow):
                                      font.family(),
                                      self.state_display_widget.currentState)
             self.action_imagebutton_image_preview.updateImage()
+            self.sendActionStateData(constants.SELECTED_CONTROL.action)
 
         def __history(font: QFont):
             setComboFontSilent(self.label_control_imagebutton_font, font)
@@ -387,6 +400,8 @@ class MainWindow(QMainWindow):
                                      states[3],
                                      self.state_display_widget.currentState)
             self.action_imagebutton_image_preview.updateImage()
+            self.sendActionStateData(constants.SELECTED_CONTROL.action)
+
 
         def __history(states: Tuple[bool, bool, bool, bool]):
             setButtonCheckedSilent(self.label_control_imagebutton_font_bold, states[0])
@@ -430,6 +445,7 @@ class MainWindow(QMainWindow):
                                      value,
                                      self.state_display_widget.currentState)
             self.action_imagebutton_image_preview.updateImage()
+            self.sendActionStateData(constants.SELECTED_CONTROL.action)
 
         def __history(value: int):
             setValueQSpinSilent(self.label_control_imagebutton_font_size, value)
@@ -454,6 +470,7 @@ class MainWindow(QMainWindow):
                                      index,
                                      self.state_display_widget.currentState)
             self.action_imagebutton_image_preview.updateImage()
+            self.sendActionStateData(constants.SELECTED_CONTROL.action)
 
         def __history(index: int):
             setComboIndexSilent(self.label_control_imagebutton_font_align_v, index)
@@ -476,6 +493,7 @@ class MainWindow(QMainWindow):
                                      index,
                                      self.state_display_widget.currentState)
             self.action_imagebutton_image_preview.updateImage()
+            self.sendActionStateData(constants.SELECTED_CONTROL.action)
 
         def __history(index: int):
             setComboIndexSilent(self.label_control_imagebutton_font_align_h, index)
@@ -497,6 +515,7 @@ class MainWindow(QMainWindow):
                                      color.name(),
                                      self.state_display_widget.currentState)
             self.action_imagebutton_image_preview.updateImage()
+            self.sendActionStateData(constants.SELECTED_CONTROL.action)
 
         def __history(color: str):
             col = QColor(color)
@@ -520,6 +539,7 @@ class MainWindow(QMainWindow):
                                      color.name(),
                                      self.state_display_widget.currentState)
             self.action_imagebutton_image_preview.updateImage()
+            self.sendActionStateData(constants.SELECTED_CONTROL.action)
 
         def __history(color: str):
             col = QColor(color)
@@ -562,10 +582,10 @@ class MainWindow(QMainWindow):
         self.label_control_rotaryencoder_identifier.setText(str(control.ident))
         #endregion
 
-        self.upadateControlWidgetState()
+        self.updateControlWidgetState()
         self.action_imagebutton_image_preview.updateImage()
 
-    def upadateControlWidgetState(self):
+    def updateControlWidgetState(self):
 
         # region Ensure Default Values
         # region ImageButton

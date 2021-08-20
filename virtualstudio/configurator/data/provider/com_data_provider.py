@@ -35,6 +35,11 @@ class ComDataProvider(AbstractDataProvider):
 
         self.client.sendMessageJSON(req.getActionWidget(action), __wrap)
 
+    def setActionData(self, action: ActionInfo, data: dict, callback: Callable[[bool], None]):
+        def __wrap(msg: dict):
+            callback(msg['success'])
+        self.client.sendMessageJSON(req.setActionData(action, data), __wrap)
+
     #endregion
 
     def listDevices(self, callback: Callable[[bool, List], None]):
