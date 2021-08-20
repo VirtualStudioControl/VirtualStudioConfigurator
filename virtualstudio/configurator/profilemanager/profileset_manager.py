@@ -1,9 +1,11 @@
 from typing import Optional, Callable
 
-from virtualstudio.common.profile_manager.profileset import ProfileSet, fromDict
-from virtualstudio.common.structs.profile.profile import Profile
+from virtualstudio.common.profile_manager.profileset import ProfileSet
 
 from time import sleep
+
+from virtualstudio.configurator.profilemanager.profile_info import ProfileInfo, fromDict as profileFromDict
+
 
 class ProfileState:
 
@@ -39,7 +41,16 @@ NEXT_PROFILE_STATE: ProfileState = ProfileState()
 AWAITING_NEW_SET = False
 
 
-def loadProfileSetFromDict (values: dict):
+def loadProfileSetFromDict(values: dict):
+    def fromDict(dict):
+        hardwareFamily = dict["hardwareFamily"]
+        profileSet = ProfileSet(hardwareFamily)
+
+        for profileDict in dict["profiles"]:
+            profileSet.appendProfile(profileFromDict(profileDict))
+
+        return profileSet
+
     global CURRENT_PROFILE_SET, AWAITING_NEW_SET
     CURRENT_PROFILE_SET = fromDict(values)
     CURRENT_PROFILE_STATE.copyState(NEXT_PROFILE_STATE)
@@ -49,12 +60,14 @@ def loadProfileSetFromDict (values: dict):
         CURRENT_PROFILE_STATE.executeBacklog()
 
 
+
+
 def expectNewProfileSet():
     global AWAITING_NEW_SET
     AWAITING_NEW_SET = True
 
 
-def addProfile(profile: Profile):
+def addProfile(profile: ProfileInfo):
     if AWAITING_NEW_SET:
         def __wrapBacklog():
             addProfile(profile)
