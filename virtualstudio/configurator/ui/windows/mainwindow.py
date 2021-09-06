@@ -254,6 +254,9 @@ class MainWindow(QMainWindow):
 
     #region Parameter Editor
     def setupControlWigets(self):
+
+        self.combo_control_button_ledstate.currentIndexChanged.connect(self.onLedButtonLEDStateChanged)
+
         self.label_control_imagebutton_choose_image.clicked.connect(self.onChooseImagebuttonImage)
         self.label_control_imagebutton_showtext.clicked.connect(self.onShowImagebuttonText)
 
@@ -272,6 +275,8 @@ class MainWindow(QMainWindow):
         self.label_control_imagebutton_font_foreground.colorChanged.connect(self.onImagebuttonFontForegroundChanged)
         self.label_control_imagebutton_font_outline.colorChanged.connect(self.onImagebuttonFontOutlineChanged)
 
+        self.combo_control_rotary_ringmode.currentIndexChanged.connect(self.onRotaryEncoderRingModeChanged)
+
         self.state_display_widget.setStateChangedCallback(self.__onStateChanged)
 
     def sendActionStateData(self, action: ActionInfo):
@@ -279,6 +284,53 @@ class MainWindow(QMainWindow):
             pass
         constants.DATA_PROVIDER.setActionData(action, {'states': action.actionParams['states']}, __setDataCB)
 
+    #region LED Button Control Handlers
+    def onLedButtonLEDStateChanged(self, index):
+        def __set(index: int):
+            actiondatatools.setValue(constants.SELECTED_CONTROL.action.actionParams,
+                                     actiondatatools.KEY_STATE_BUTTON_LEDSTATE,
+                                     index,
+                                     self.state_display_widget.currentState)
+            self.sendActionStateData(constants.SELECTED_CONTROL.action)
+
+        def __history(index: int):
+            setComboIndexSilent(self.combo_control_button_ledstate, index)
+            __set(index)
+
+        prevVal = actiondatatools.getValueOrDefault(constants.SELECTED_CONTROL.action.actionParams,
+                                           actiondatatools.KEY_STATE_BUTTON_LEDSTATE,
+                                           self.state_display_widget.currentState,
+                                           default_values.BUTTON_LED_STATE)
+        constants.HISTORY.addItem(ActionValueChanged(func=__history,
+                                                     old=prevVal,
+                                                     new=index))
+
+        __set(index)
+    #endregion
+
+    #region Rotary Encoder Control Handlers
+    def onRotaryEncoderRingModeChanged(self, index):
+        def __set(index: int):
+            actiondatatools.setValue(constants.SELECTED_CONTROL.action.actionParams,
+                                     actiondatatools.KEY_STATE_ROTARYENCODER_LEDRINGMODE,
+                                     index,
+                                     self.state_display_widget.currentState)
+            self.sendActionStateData(constants.SELECTED_CONTROL.action)
+
+        def __history(index: int):
+            setComboIndexSilent(self.combo_control_rotary_ringmode, index)
+            __set(index)
+
+        prevVal = actiondatatools.getValueOrDefault(constants.SELECTED_CONTROL.action.actionParams,
+                                           actiondatatools.KEY_STATE_ROTARYENCODER_LEDRINGMODE,
+                                           self.state_display_widget.currentState,
+                                           default_values.ROTARY_LEDRING_MODE)
+        constants.HISTORY.addItem(ActionValueChanged(func=__history,
+                                                     old=prevVal,
+                                                     new=index))
+
+        __set(index)
+    #endregion
 
     #region Imagebutton control Handlers
     def onChooseImagebuttonImage(self, checked=False):
@@ -588,6 +640,13 @@ class MainWindow(QMainWindow):
     def updateControlWidgetState(self):
 
         # region Ensure Default Values
+        #region Button
+        actiondatatools.ensureDefaultValue(constants.SELECTED_CONTROL.action.actionParams,
+                                           actiondatatools.KEY_STATE_BUTTON_LEDSTATE,
+                                           self.state_display_widget.currentState,
+                                           default_values.BUTTON_LED_STATE)
+        #endregion
+
         # region ImageButton
         actiondatatools.ensureDefaultValue(constants.SELECTED_CONTROL.action.actionParams,
                                            actiondatatools.KEY_STATE_IMAGEBUTTON_TEXT_SHOW,
@@ -649,7 +708,23 @@ class MainWindow(QMainWindow):
                                            self.state_display_widget.currentState,
                                            default_values.IMAGEBUTTON_COLOR_BACKGROUND)
         # endregion
+
+        #region Rotary Encoder
+        actiondatatools.ensureDefaultValue(constants.SELECTED_CONTROL.action.actionParams,
+                                           actiondatatools.KEY_STATE_ROTARYENCODER_LEDRINGMODE,
+                                           self.state_display_widget.currentState,
+                                           default_values.ROTARY_LEDRING_MODE)
+        #endregion
+
         # endregion
+
+        #region Button
+        setComboIndexSilent(self.combo_control_button_ledstate,
+                            actiondatatools.getValueOrDefault(constants.SELECTED_CONTROL.action.actionParams,
+                                                              actiondatatools.KEY_STATE_BUTTON_LEDSTATE,
+                                                              self.state_display_widget.currentState,
+                                                              default_values.BUTTON_LED_STATE))
+        #endregion
 
         #region ImageButton
         setButtonCheckedSilent(self.label_control_imagebutton_showtext, actiondatatools.getValueOrDefault(constants.SELECTED_CONTROL.action.actionParams,
@@ -712,6 +787,14 @@ class MainWindow(QMainWindow):
                                                      actiondatatools.KEY_STATE_IMAGEBUTTON_COLOR_BACKGROUND,
                                                      self.state_display_widget.currentState,
                                                      default_values.IMAGEBUTTON_COLOR_BACKGROUND)))
+        #endregion
+
+        #region Rotary Encoder
+        setComboIndexSilent(self.combo_control_rotary_ringmode,
+                            actiondatatools.getValueOrDefault(constants.SELECTED_CONTROL.action.actionParams,
+                                                              actiondatatools.KEY_STATE_ROTARYENCODER_LEDRINGMODE,
+                                                              self.state_display_widget.currentState,
+                                                              default_values.ROTARY_LEDRING_MODE))
         #endregion
 
     #endregion
