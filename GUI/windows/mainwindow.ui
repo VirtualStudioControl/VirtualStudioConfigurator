@@ -159,7 +159,7 @@
     <addaction name="actionUndo"/>
     <addaction name="actionRedo"/>
     <addaction name="separator"/>
-    <addaction name="actionDelete_Action"/>
+    <addaction name="actionDeleteAction"/>
    </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="title">
@@ -1122,7 +1122,7 @@
     <string>Log History</string>
    </property>
   </action>
-  <action name="actionDelete_Action">
+  <action name="actionDeleteAction">
    <property name="text">
     <string>Delete Action</string>
    </property>

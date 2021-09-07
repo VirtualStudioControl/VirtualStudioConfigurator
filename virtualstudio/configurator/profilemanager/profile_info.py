@@ -16,7 +16,8 @@ class ProfileInfo(Profile):
         self.actions[controlID] = action
 
     def removeAction(self, controlID: int):
-        del self.actions[controlID]
+        if controlID in self.actions:
+            del self.actions[controlID]
 
     def update(self, other):
         self.hardwareFamily = other.hardwareFamily
