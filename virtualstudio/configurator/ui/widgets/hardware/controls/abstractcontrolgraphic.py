@@ -75,16 +75,26 @@ class AbstractControlGraphic(QGraphicsItem):
             self.size[1]
         ).normalized()
 
-    def setAction(self, action: ActionInfo):
+    def setAction(self, action: Optional[ActionInfo]):
         try:
             constants.HISTORY.addItem(ActionValueChanged(func=self._setAction, old=self.action, new=action))
         except Exception as ex:
             print(ex)
 
+        profileName = profilemanager.getCurrentProfileName()
+        profile = profilemanager.getProfileByName(profileName)
+
+        if action is not None:
+            profile.setAction(self.ident, action)
+        else:
+            profile.removeAction(self.ident)
+        datarequests.updateProfile(profile)
+
         self._setAction(action)
 
     def _setAction(self, action: Optional[ActionInfo]):
         self.action = action
+
         if self.action is not None:
             iconData = actiondatatools.getValueOrDefault(self.action.actionParams,
                                                                 actiondatatools.KEY_STATE_IMAGEBUTTON_IMAGE,
@@ -96,8 +106,10 @@ class AbstractControlGraphic(QGraphicsItem):
                 self.setIconImage(img)
             else:
                 self.setIconImage(None)
+
         else:
             self.setIconImage(None)
+
         self.update()
 
     def setIconImage(self, iconImage: Optional[QImage]):
@@ -127,15 +139,8 @@ class AbstractControlGraphic(QGraphicsItem):
 
             profileName = profilemanager.getCurrentProfileName()
             deviceFamily = devicemanager.getFamily(devicemanager.getDevice(constants.CURRENT_DEVICE))
+
             actionInfo = ActionInfo(action.ident, self.ident, self.getType(), profileName=profileName, deviceFamily=deviceFamily)
-
-            profile = profilemanager.getProfileByName(profileName)
-            if action is not None:
-                profile.setAction(self.ident, actionInfo)
-            else:
-                profile.removeAction(self.ident)
-
-            datarequests.updateProfile(profile)
 
             self.setAction(actionInfo)
 

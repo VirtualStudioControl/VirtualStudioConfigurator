@@ -138,6 +138,8 @@ class MainWindow(QMainWindow):
         self.actionUndo.triggered.connect(self.onUndo)
         self.actionRedo.triggered.connect(self.onRedo)
 
+        self.actionDeleteAction.triggered.connect(self.deleteSelectedAction)
+
         self.actionFullscreen.toggled.connect(self.setFullscreen)
 
         self.bindActionToDock(self.actionDockActions, self.actionDock)
@@ -185,6 +187,15 @@ class MainWindow(QMainWindow):
         action: AbstractHistoryAction = constants.HISTORY.redo()
         if action is not None:
             action.redoAction()
+
+    def deleteSelectedAction(self, triggered=False):
+        """
+        Deletes the action of the current
+
+        :return: None
+        """
+        constants.SELECTED_CONTROL.setAction(None)
+
 
     def setFullscreen(self, triggered=False):
         """
