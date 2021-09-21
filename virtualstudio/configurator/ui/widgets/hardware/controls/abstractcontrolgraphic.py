@@ -92,6 +92,9 @@ class AbstractControlGraphic(QGraphicsItem):
 
         self._setAction(action)
 
+        if self.isSelected:
+            self.scene().selectionManager.onSelectionChangeCB(self)
+
     def _setAction(self, action: Optional[ActionInfo]):
         self.action = action
 
