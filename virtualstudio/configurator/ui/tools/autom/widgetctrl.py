@@ -432,6 +432,8 @@ def __setParams(widget: QWidget, params: Dict[str, PRIMITIVE_LISTS]) -> bool:
     __applyParamToWidget(widget, params, "setVisible", PARAMETER_VISIBLE)
     __applyParamToWidget(widget, params, "setStyleSheet", PARAMETER_STYLESHEET)
 
+    __applyParamToWidget(widget, params, "addItems", PARAMETER_ITEM_TEXTS)
+
     __applyParamToWidget(widget, params, "setCheckable", PARAMETER_CHECKABLE)
     __applyParamToWidget(widget, params, "setChecked", PARAMETER_CHECKED)
 
@@ -477,8 +479,6 @@ def __setParams(widget: QWidget, params: Dict[str, PRIMITIVE_LISTS]) -> bool:
     __applyParamToWidget(widget, params, "setFormat", PARAMETER_FORMAT)
 
     __applyParamToWidget(widget, params, "setDisplayIntegerBase", PARAMETER_DISPALY_INTEGER_BASE)
-
-    __applyParamToWidget(widget, params, "addItems", PARAMETER_ITEM_TEXTS)
 
     return True
 

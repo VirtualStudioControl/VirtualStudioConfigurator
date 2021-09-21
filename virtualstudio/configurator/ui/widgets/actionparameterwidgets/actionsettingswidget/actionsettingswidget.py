@@ -19,11 +19,9 @@ class ActionSettingsWidget(QWidget):
     def __init__(self, parent=None):
         super(ActionSettingsWidget, self).__init__(parent=parent)
 
-        self.action = None
+        self.action: Optional[ActionInfo]= None
 
         self.__loadNewUI.connect(self.loadUI)
-
-        print(self.__dict__)
 
     def clearWidgets(self):
         for c in self.children():
@@ -34,7 +32,7 @@ class ActionSettingsWidget(QWidget):
     def setAction(self, action: Optional[ActionInfo]):
         self.clearWidgets()
 
-        self.action = action
+        self.action: Optional[ActionInfo] = action
 
         def __callback(data: Any, type: str, success: bool):
             if not success:
@@ -52,12 +50,30 @@ class ActionSettingsWidget(QWidget):
         if type == UI_TYPE_QTUI:
             self.loadQTUI(icontools.decodeIconData(data))
             self.connectCallbacks()
-            return
+
+        if self.action is not None:
+            try:
+                self.loadUIValues()
+            except Exception as ex:
+                print(ex)
+                import traceback
+                traceback.print_exc()
 
     def loadQTUI(self, data: bytes):
         buffer = RamFile(data)
         uic.loadUi(buffer, self)
         self.update()
+
+    def loadUIValues(self):
+        gui_values = actiondatatools.getValue(self.action.actionParams, actiondatatools.KEY_GUI)
+
+        if gui_values is None:
+            return
+
+        for name in gui_values:
+            widget = self.__dict__[name]
+            if widget is not None:
+                widgetctrl.setParamsSilent(widget, gui_values[name])
 
     def __createCallback(self, name, action: Optional[ActionInfo]):
         def __cb():
@@ -66,17 +82,12 @@ class ActionSettingsWidget(QWidget):
             if self.action is None:
                 return
             widget = self.__dict__[name]
-            try:
-                params = widgetctrl.getParams(widget)
-                print(name, params)
-                data = {}
-                actiondatatools.updateValue(data, actiondatatools.KEY_GUI, {name: params})
-                constants.DATA_PROVIDER.setActionData(action, data, __setDataCB)
-                actiondatatools.merge(action.actionParams, data)
-            except Exception as ex:
-                print(ex)
-                import traceback
-                traceback.print_exc()
+
+            params = widgetctrl.getParams(widget)
+            data = {}
+            actiondatatools.updateValue(data, actiondatatools.KEY_GUI, {name: params})
+            constants.DATA_PROVIDER.setActionData(action, data, __setDataCB)
+            actiondatatools.merge(action.actionParams, data)
 
         return __cb
 
