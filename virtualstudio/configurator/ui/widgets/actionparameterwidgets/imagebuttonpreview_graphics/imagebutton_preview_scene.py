@@ -50,6 +50,7 @@ class ImagebuttonPreviewScene(QGraphicsScene):
         self.updateImageFromAction()
 
     def onDeviceChanged(self):
+        print("DEVICE CHANGED !")
         device = devicemanager.getDevice(constants.CURRENT_DEVICE)
 
         if devicemanager.hasParameters(device):

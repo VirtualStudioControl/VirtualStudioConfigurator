@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Tuple
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -106,7 +106,9 @@ class AbstractControlGraphic(QGraphicsItem):
                 decoded = icontools.decodeIconData(iconData)
                 img = QImage()
                 img.loadFromData(decoded)
-                self.setIconImage(img)
+                device = devicemanager.getDevice(constants.CURRENT_DEVICE)
+
+                self.setIconImage(img, devicemanager.getParameterIconFlip(device, default=(False, False)))
             else:
                 self.setIconImage(None)
 
@@ -115,7 +117,7 @@ class AbstractControlGraphic(QGraphicsItem):
 
         self.update()
 
-    def setIconImage(self, iconImage: Optional[QImage]):
+    def setIconImage(self, iconImage: Optional[QImage], iconFlip: Tuple[bool, bool] = (False, False)):
         pass
 
     #region Drag & Drop

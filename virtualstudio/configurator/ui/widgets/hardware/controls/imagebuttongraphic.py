@@ -1,3 +1,5 @@
+from typing import Tuple
+
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
@@ -10,12 +12,14 @@ class ImageButtonGraphic(ButtonGraphic):
         super().__init__(ident, position, size, text, parent)
 
         self.iconImage = None
+        self.iconFlip = (False, False)
 
     def getType(self):
         return CONTROL_TYPE_IMAGE_BUTTON
 
-    def setIconImage(self, iconImage: Optional[QImage]):
+    def setIconImage(self, iconImage: Optional[QImage], iconFlip: Tuple[bool, bool] = (False, False)):
         self.iconImage = iconImage
+        self.iconFlip = iconFlip
         self.update()
 
     def paint(self, painter, style: QStyleOptionGraphicsItem, widget=None):
@@ -31,7 +35,7 @@ class ImageButtonGraphic(ButtonGraphic):
             if self.iconImage is not None:
                 painter.setClipPath(path_outline.simplified(), Qt.ClipOperation.ReplaceClip)
                 painter.drawImage(QRectF(0, 0, self.size[0], self.size[1]),
-                              self.iconImage)
+                              self.iconImage.mirrored(*self.iconFlip))
                 painter.setClipPath(path_outline.simplified(), Qt.ClipOperation.NoClip)
                 painter.setBrush(Qt.NoBrush)
 
