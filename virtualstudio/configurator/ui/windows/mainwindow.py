@@ -102,6 +102,8 @@ class MainWindow(QMainWindow):
 
         self.deviceView.setHardwareOptionWidget(self.device_param_widget)
 
+        constants.DATA_PROVIDER.setupEvents()
+
         self.setupDocks()
         self.setupUIActions()
         self.setupInteractiveWidgets()

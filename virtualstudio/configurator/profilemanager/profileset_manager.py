@@ -4,6 +4,7 @@ from virtualstudio.common.profile_manager.profileset import ProfileSet
 
 from time import sleep
 
+from virtualstudio.common.structs.action.action_info import ActionInfo
 from virtualstudio.configurator.profilemanager.profile_info import ProfileInfo, fromDict as profileFromDict
 
 
@@ -60,8 +61,6 @@ def loadProfileSetFromDict(values: dict):
         CURRENT_PROFILE_STATE.executeBacklog()
 
 
-
-
 def expectNewProfileSet():
     global AWAITING_NEW_SET
     AWAITING_NEW_SET = True
@@ -98,3 +97,25 @@ def getProfileByName(name: str):
         sleep(0.1)
 
     return CURRENT_PROFILE_SET.getProfile(name)
+
+def updateActionData(action: ActionInfo):
+    if AWAITING_NEW_SET:
+        def __wrapBacklog():
+            updateActionData(action)
+
+        NEXT_PROFILE_STATE.appendToBacklog(__wrapBacklog)
+        print("Deffered Updated Action:", action.actionParams)
+        return
+
+    print("Try Updated Action:", action.actionParams)
+    if CURRENT_PROFILE_SET is not None:
+        print("Valid Profile set found")
+        if CURRENT_PROFILE_SET.hardwareFamily != action.deviceFamily:
+            print("Hardware Family does not match", CURRENT_PROFILE_SET.hardwareFamily, action.deviceFamily)
+            return
+
+        profile = CURRENT_PROFILE_SET.getProfile(action.profileName)
+        profile.updateActionData(action.control, action.actionParams)
+
+        print("Updated Action:", action.actionParams)
+

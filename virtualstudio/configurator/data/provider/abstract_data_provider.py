@@ -9,6 +9,8 @@ class AbstractDataProvider:
     def __init__(self):
         pass
 
+    #region Messages
+
     #region Actions
 
     def listActions(self, callback: Callable[[bool, List, List], None]):
@@ -25,8 +27,10 @@ class AbstractDataProvider:
 
     #endregion
 
+    #region Device
     def listDevices(self, callback: Callable[[bool, List], None]):
         pass
+    #endregion
 
     #region Profiles
 
@@ -43,6 +47,15 @@ class AbstractDataProvider:
         pass
 
     def removeProfile(self, deviceID: str, profileName: str, callback: Callable[[Dict, bool], None]):
+        pass
+
+    #endregion
+
+    #endregion
+
+    #region Events
+
+    def setupEvents(self):
         pass
 
     #endregion

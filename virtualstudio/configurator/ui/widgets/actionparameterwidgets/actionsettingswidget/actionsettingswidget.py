@@ -15,12 +15,11 @@ from virtualstudio.configurator.ui.widgets.actionparameterwidgets.actionsettings
 class ActionSettingsWidget(QWidget):
 
     __loadNewUI = pyqtSignal(str, str)
+    action: Optional[ActionInfo] = None
 
     def __init__(self, parent=None):
+        self.action: Optional[ActionInfo] = None
         super(ActionSettingsWidget, self).__init__(parent=parent)
-
-        self.action: Optional[ActionInfo]= None
-
         self.__loadNewUI.connect(self.loadUI)
 
     def clearWidgets(self):
@@ -32,7 +31,10 @@ class ActionSettingsWidget(QWidget):
     def setAction(self, action: Optional[ActionInfo]):
         self.clearWidgets()
 
-        self.action: Optional[ActionInfo] = action
+        if self.action is not None:
+            self.action.setDataChangedCallback(None)
+
+        self.action = action
 
         def __callback(data: Any, type: str, success: bool):
             if not success:
@@ -42,6 +44,7 @@ class ActionSettingsWidget(QWidget):
         if action is None:
             return
         constants.DATA_PROVIDER.getActionWidget(action, __callback)
+        self.action.setDataChangedCallback(self.loadUIValues)
 
     def loadUI(self, data: Any, type: str):
         if type == UI_TYPE_INVALID:

@@ -428,11 +428,14 @@ def __getParams(widget: QWidget) -> Dict[str, PRIMITIVE_LISTS]:
 #region SetParams
 
 def __setParams(widget: QWidget, params: Dict[str, PRIMITIVE_LISTS]) -> bool:
+
     __applyParamToWidget(widget, params, "setEnabled", PARAMETER_ENABLED)
     __applyParamToWidget(widget, params, "setVisible", PARAMETER_VISIBLE)
     __applyParamToWidget(widget, params, "setStyleSheet", PARAMETER_STYLESHEET)
 
-    __applyParamToWidget(widget, params, "addItems", PARAMETER_ITEM_TEXTS)
+    if __hasMethod(widget, "clear") and __hasMethod(widget, "addItems"):
+        widget.clear()
+        __applyParamToWidget(widget, params, "addItems", PARAMETER_ITEM_TEXTS)
 
     __applyParamToWidget(widget, params, "setCheckable", PARAMETER_CHECKABLE)
     __applyParamToWidget(widget, params, "setChecked", PARAMETER_CHECKED)
