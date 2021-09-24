@@ -19,6 +19,11 @@ class ProfileInfo(Profile):
         if controlID in self.actions:
             del self.actions[controlID]
 
+    def updateActionData(self, controlID: int, actionParams: dict):
+        if controlID in self.actions:
+            self.actions[controlID].actionParams = actionParams
+            self.actions[controlID].onDataChanged()
+
     def update(self, other):
         self.hardwareFamily = other.hardwareFamily
         if isinstance(other, ProfileInfo):

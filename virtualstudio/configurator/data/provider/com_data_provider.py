@@ -1,8 +1,10 @@
 from typing import List, Callable, Dict, Any
 
+from virtualstudio.common.net.protocols.virtualstudiocom import constants as const
 from virtualstudio.common.structs.action.action_info import ActionInfo
 from virtualstudio.common.structs.profile.profile import Profile
 from .abstract_data_provider import AbstractDataProvider
+from ...eventhandler.eventhandler import paramUpdateHandler
 from ...net.com_client import ComClient
 
 from virtualstudio.common.net.protocols.virtualstudiocom import client as req
@@ -14,6 +16,8 @@ class ComDataProvider(AbstractDataProvider):
         super().__init__()
         self.client = ComClient(coreAddress, core_port)
         self.client.start()
+
+    #region Messages
 
     #region Actions
 
@@ -42,11 +46,15 @@ class ComDataProvider(AbstractDataProvider):
 
     #endregion
 
+    #region Devices
+
     def listDevices(self, callback: Callable[[bool, List], None]):
         def __wrap(msg: dict):
             callback(msg['devices_loaded'], msg['devices'])
 
         self.client.sendMessageJSON(req.requestDeviceList(), __wrap)
+
+    #endregion
 
     #region Profiles
 
@@ -79,6 +87,15 @@ class ComDataProvider(AbstractDataProvider):
             callback(msg['profileset'], msg['success'])
 
         self.client.sendMessageJSON(req.requestRemoveProfile(deviceID, profileName), __wrap)
+
+    #endregion
+
+    #endregion
+
+    #region Events
+
+    def setupEvents(self):
+        self.client.addEventCallback(const.EVT_UPDATE_PARAMS, paramUpdateHandler)
 
     #endregion
 
