@@ -1,5 +1,6 @@
 from typing import List, Callable, Dict, Any
 
+from virtualstudio.common.account_manager.account_info import AccountInfo
 from virtualstudio.common.net.protocols.virtualstudiocom import constants as const
 from virtualstudio.common.structs.action.action_info import ActionInfo
 from virtualstudio.common.structs.profile.profile import Profile
@@ -18,6 +19,21 @@ class ComDataProvider(AbstractDataProvider):
         self.client.start()
 
     #region Messages
+
+    #region Accounts
+
+    def listAccounts(self, callback: Callable[[bool, List, Dict, Dict], None]):
+        def __wrap(msg: dict):
+            callback(msg['accounts_loaded'], msg['accounts'], msg['accountTypes'], msg['categories'])
+
+        self.client.sendMessageJSON(req.requestAccountList(), __wrap)
+
+    def setAccountData(self, account: AccountInfo, callback: Callable[[bool, str], None]):
+        def __wrap(msg: dict):
+            callback(msg['success'], msg['uuid'])
+        self.client.sendMessageJSON(req.setAccountData(account), __wrap)
+
+    #endregion
 
     #region Actions
 
