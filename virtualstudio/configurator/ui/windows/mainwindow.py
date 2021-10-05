@@ -4,8 +4,12 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import QFont, QColor
 from PyQt5 import uic
 
+from virtualstudio.common.account_manager.account_info import AccountInfo
 from virtualstudio.common.tools import actiondatatools
 from virtualstudio.configurator.ui.widgets.actionparameterwidgets.actionsettingswidget.actionsettingswidget import ActionSettingsWidget
+from ..widgets.accounts.editor.accounteditor import AccountEditor
+from ..widgets.accounts.model.accountmodel import AccountModel, DATA_ROLE_ACCOUNT_DATA
+from ..widgets.accounts.view.accountview import AccountView
 from ..widgets.general.color_selection_button import ColorSelectionButton
 from ...profilemanager import profileset_manager as ProfilesetManager
 from ...devicemanager import devicemanager
@@ -133,6 +137,9 @@ class MainWindow(QMainWindow):
         self.setCorner(Qt.Corner.BottomRightCorner, Qt.DockWidgetArea.RightDockWidgetArea)
         self.setCorner(Qt.Corner.TopRightCorner, Qt.DockWidgetArea.RightDockWidgetArea)
 
+        self.setCorner(Qt.Corner.BottomLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
+        self.setCorner(Qt.Corner.TopLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
+
     #endregion
 
     #region UI Actions
@@ -146,6 +153,9 @@ class MainWindow(QMainWindow):
 
         self.bindActionToDock(self.actionDockActions, self.actionDock)
         self.bindActionToDock(self.actionDockActionSettings, self.actionSettingsDock)
+        self.bindActionToDock(self.actionDockAccounts, self.accountDock)
+
+        self.accountDock.close()
 
     #region generators
 
@@ -226,8 +236,138 @@ class MainWindow(QMainWindow):
 
         self.deviceView.setSelectionChangeHandler(self.__onActionItemSelectionChanged)
 
+        constants.DATA_PROVIDER.listAccounts(self._setupAccounts)
         constants.DATA_PROVIDER.listDevices(self._setupDevices)
         constants.DATA_PROVIDER.listActions(self._setupActions)
+
+    #region Accounts
+
+    def _setupAccounts(self, accounts_loaded: bool, accounts: List[Dict[str, Any]],
+                       accountIcons: Dict[str, str], categoryIcons: Dict[str, str]):
+        if not accounts_loaded:
+            return
+
+        self.accountListModel = AccountModel(0, 1, self)
+
+        self.accountListModel.addAccounts(accounts)
+
+        self.account_list_widget.setModel(self.accountListModel)
+        self.account_list_widget.setUniformRowHeights(True)
+        self.account_list_widget.setSelectionMode(QAbstractItemView.SingleSelection)
+
+        self.account_list_widget.selectionModel().selectionChanged.connect(self.onAccountSelectionChanged)
+
+        self.account_list_widget.setItemDelegateForColumn(0, AccountEditor(self.account_list_widget, accountIcons, categoryIcons))
+
+        self.account_param_type_combo.addItems(list(accountIcons.keys()))
+
+        self.setupAccountUI()
+
+    def setupAccountUI(self):
+        #self.accountWidgetStack.setCurrentIndex(0)
+
+        self.account_param_title_edit.textChanged.connect(self.title_cb)
+
+        self.account_param_type_combo.currentTextChanged.connect(self.type_cb)
+
+        self.account_param_server_address_edit.textChanged.connect(self.server_cb)
+
+        self.account_param_server_port_spin.valueChanged.connect(self.port_cb)
+
+        self.account_param_username_edit.textChanged.connect(self.user_cb)
+
+        self.account_param_password_edit.textChanged.connect(self.password_cb)
+
+        self.account_add_button.clicked.connect(self._onAddAccountClicked)
+        print("Account UI Callbacks set")
+
+    def onAccountDataUpdated(self, success: bool, uuid: str):
+        print("Account Updated !", success)
+
+    def title_cb(self):
+        print("Title Changed")
+        if constants.CURRENT_ACCOUNT is None:
+            print("Current Account is None")
+            return
+        constants.CURRENT_ACCOUNT.accountTitle = self.account_param_title_edit.text()
+        self.account_list_widget.model().reset()
+        constants.DATA_PROVIDER.setAccountData(constants.CURRENT_ACCOUNT, self.onAccountDataUpdated)
+
+    def type_cb(self):
+        if constants.CURRENT_ACCOUNT is None:
+            return
+        constants.CURRENT_ACCOUNT.accountType = self.account_param_type_combo.currentText()
+        constants.DATA_PROVIDER.setAccountData(constants.CURRENT_ACCOUNT, self.onAccountDataUpdated)
+
+    def server_cb(self):
+        if constants.CURRENT_ACCOUNT is None:
+            return
+        constants.CURRENT_ACCOUNT.server = self.account_param_server_address_edit.text()
+        self.account_list_widget.model().reset()
+        constants.DATA_PROVIDER.setAccountData(constants.CURRENT_ACCOUNT, self.onAccountDataUpdated)
+
+    def port_cb(self):
+        if constants.CURRENT_ACCOUNT is None:
+            return
+        constants.CURRENT_ACCOUNT.port = self.account_param_server_port_spin.value()
+        self.account_list_widget.model().reset()
+        constants.DATA_PROVIDER.setAccountData(constants.CURRENT_ACCOUNT, self.onAccountDataUpdated)
+
+    def user_cb(self):
+        if constants.CURRENT_ACCOUNT is None:
+            return
+        constants.CURRENT_ACCOUNT.username = self.account_param_username_edit.text()
+        self.account_list_widget.model().reset()
+        constants.DATA_PROVIDER.setAccountData(constants.CURRENT_ACCOUNT, self.onAccountDataUpdated)
+
+    def password_cb(self):
+        if constants.CURRENT_ACCOUNT is None:
+            return
+        constants.CURRENT_ACCOUNT.password = self.account_param_password_edit.text()
+        self.account_list_widget.model().reset()
+        constants.DATA_PROVIDER.setAccountData(constants.CURRENT_ACCOUNT, self.onAccountDataUpdated)
+
+    def _onAddAccountClicked(self, checked=False):
+        name, doProceed = QInputDialog.getText(self, "Add Account", "Name", flags=Qt.Popup)
+
+        if not doProceed:
+            return
+
+        def genAccountUpdate(account: AccountInfo):
+            def onAccountDataUpdated(success: bool, uuid: str):
+                if success:
+                    if account.uuid is None:
+                        account.uuid = uuid
+                        self.accountListModel.addAccount(account)
+
+            return onAccountDataUpdated
+
+        account: AccountInfo = AccountInfo()
+        account.accountTitle = name
+        self.account_param_type_combo: QComboBox
+        account.accountType = self.account_param_type_combo.itemText(0)
+        constants.DATA_PROVIDER.setAccountData(account, genAccountUpdate(account))
+
+    def onAccountSelectionChanged(self, newItem: QItemSelection, oldItem: QItemSelection):
+        print("Account Selection Changed")
+        if len(newItem.indexes()) > 0:
+            account: AccountInfo = newItem.indexes().pop(0).data(DATA_ROLE_ACCOUNT_DATA)
+            constants.CURRENT_ACCOUNT = account
+            self.bindAccountToUI(account)
+            self.accountWidgetStack.setCurrentIndex(1)
+        else:
+            self.accountWidgetStack.setCurrentIndex(0)
+            constants.CURRENT_ACCOUNT = None
+
+    def bindAccountToUI(self, account: AccountInfo):
+
+        setValueQLineEditSilent(self.account_param_title_edit, account.accountTitle)
+        setValueQLineEditSilent(self.account_param_server_address_edit, account.server)
+        setValueQSpinSilent(self.account_param_server_port_spin, account.port)
+        setValueQLineEditSilent(self.account_param_username_edit, account.username)
+        setValueQLineEditSilent(self.account_param_password_edit, "")
+
+    #endregion
 
     #region Actions
     def _setupActions(self, actions_loaded: bool, actions: list, categoryIcons: list):

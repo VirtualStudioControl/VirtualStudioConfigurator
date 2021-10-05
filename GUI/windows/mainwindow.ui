@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1237</width>
-    <height>837</height>
+    <width>1359</width>
+    <height>848</height>
    </rect>
   </property>
   <property name="acceptDrops">
@@ -111,7 +111,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>465</width>
+         <width>526</width>
          <height>69</height>
         </rect>
        </property>
@@ -140,7 +140,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1237</width>
+     <width>1359</width>
      <height>21</height>
     </rect>
    </property>
@@ -253,7 +253,7 @@
      <item row="0" column="0">
       <widget class="QStackedWidget" name="actionSettingsRootWidget">
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="page_4">
         <layout class="QVBoxLayout" name="verticalLayout">
@@ -294,8 +294,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>837</width>
-                  <height>246</height>
+                  <width>63</width>
+                  <height>28</height>
                  </rect>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_6">
@@ -323,8 +323,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>837</width>
-                  <height>246</height>
+                  <width>148</width>
+                  <height>124</height>
                  </rect>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_8">
@@ -397,8 +397,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>338</width>
-              <height>292</height>
+              <width>322</width>
+              <height>263</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -1034,6 +1034,326 @@
     </layout>
    </widget>
   </widget>
+  <widget class="CloseableDock" name="accountDock">
+   <property name="floating">
+    <bool>true</bool>
+   </property>
+   <property name="windowTitle">
+    <string>Account Manager</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QGridLayout" name="gridLayout_20">
+     <item row="1" column="2">
+      <widget class="QToolButton" name="account_add_category_button">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Add Category</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1" colspan="2">
+      <widget class="AccountView" name="account_list_widget">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="editTriggers">
+        <set>QAbstractItemView::NoEditTriggers</set>
+       </property>
+       <property name="dragEnabled">
+        <bool>true</bool>
+       </property>
+       <property name="dragDropMode">
+        <enum>QAbstractItemView::InternalMove</enum>
+       </property>
+       <property name="selectionBehavior">
+        <enum>QAbstractItemView::SelectRows</enum>
+       </property>
+       <attribute name="headerVisible">
+        <bool>false</bool>
+       </attribute>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QToolButton" name="account_add_button">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Add New</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="3" rowspan="2">
+      <widget class="QScrollArea" name="scrollArea_5">
+       <property name="widgetResizable">
+        <bool>true</bool>
+       </property>
+       <widget class="QWidget" name="scrollAreaWidgetContents_5">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>298</width>
+          <height>308</height>
+         </rect>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_23">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="QStackedWidget" name="accountWidgetStack">
+           <property name="currentIndex">
+            <number>1</number>
+           </property>
+           <widget class="QWidget" name="page_2">
+            <layout class="QGridLayout" name="gridLayout_22">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_23">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Select an account in order to configure the account</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="page">
+            <layout class="QGridLayout" name="gridLayout_21">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <item row="0" column="0">
+              <widget class="QWidget" name="widget_5" native="true">
+               <layout class="QGridLayout" name="gridLayout_17">
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>6</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
+                <property name="spacing">
+                 <number>6</number>
+                </property>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="label_22">
+                  <property name="text">
+                   <string>Account Name:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QLineEdit" name="account_param_title_edit"/>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QLabel" name="label_25">
+                  <property name="text">
+                   <string>Account Type:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="2">
+                 <widget class="QToolButton" name="account_param_delete_button">
+                  <property name="text">
+                   <string>X</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1" colspan="2">
+                 <widget class="QComboBox" name="account_param_type_combo"/>
+                </item>
+                <item row="3" column="0" colspan="3">
+                 <widget class="QGroupBox" name="groupBox">
+                  <property name="title">
+                   <string>Server</string>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_18">
+                   <item row="1" column="0">
+                    <widget class="QLineEdit" name="account_param_server_address_edit">
+                     <property name="placeholderText">
+                      <string>127.0.0.1</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="2">
+                    <widget class="QSpinBox" name="account_param_server_port_spin">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>70</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                     </property>
+                     <property name="showGroupSeparator" stdset="0">
+                      <bool>false</bool>
+                     </property>
+                     <property name="maximum">
+                      <number>65535</number>
+                     </property>
+                     <property name="value">
+                      <number>443</number>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="2">
+                    <widget class="QLabel" name="label_18">
+                     <property name="text">
+                      <string>Port</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="0">
+                    <widget class="QLabel" name="label_17">
+                     <property name="text">
+                      <string>Server</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="1">
+                    <widget class="QLabel" name="label_19">
+                     <property name="text">
+                      <string>:</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item row="4" column="0" colspan="3">
+                 <widget class="QGroupBox" name="groupBox_2">
+                  <property name="title">
+                   <string>Account</string>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_19">
+                   <item row="1" column="1">
+                    <widget class="QLineEdit" name="account_param_password_edit">
+                     <property name="echoMode">
+                      <enum>QLineEdit::PasswordEchoOnEdit</enum>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="0">
+                    <widget class="QLabel" name="label_21">
+                     <property name="text">
+                      <string>Username</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="1">
+                    <widget class="QLineEdit" name="account_param_username_edit"/>
+                   </item>
+                   <item row="1" column="0">
+                    <widget class="QLabel" name="label_20">
+                     <property name="text">
+                      <string>Password</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="2" column="0" colspan="2">
+                    <widget class="QLabel" name="label_24">
+                     <property name="styleSheet">
+                      <string notr="true">font: 75 8pt &quot;MS Shell Dlg 2&quot;;
+background-color: rgb(255, 0, 0);
+color: rgb(255, 255, 255);</string>
+                     </property>
+                     <property name="text">
+                      <string>PASSWORDS ARE STORED AS PLAIN TEXT</string>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                     <property name="textInteractionFlags">
+                      <set>Qt::NoTextInteraction</set>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item row="5" column="0" colspan="3">
+                 <widget class="QGroupBox" name="groupBox_3">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="title">
+                   <string>Additional Settings</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
   <action name="actionDockActions">
    <property name="checkable">
     <bool>true</bool>
@@ -1169,6 +1489,11 @@
    <extends>QWidget</extends>
    <header>virtualstudio.configurator.ui.widgets.actionparameterwidgets.actionsettingswidget.actionsettingswidget</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>AccountView</class>
+   <extends>QTreeView</extends>
+   <header>virtualstudio.configurator.ui.widgets.accounts.view.accountview</header>
   </customwidget>
  </customwidgets>
  <resources/>

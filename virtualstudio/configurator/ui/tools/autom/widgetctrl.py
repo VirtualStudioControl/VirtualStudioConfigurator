@@ -435,7 +435,8 @@ def __setParams(widget: QWidget, params: Dict[str, PRIMITIVE_LISTS]) -> bool:
 
     if __hasMethod(widget, "clear") and __hasMethod(widget, "addItems"):
         widget.clear()
-        __applyParamToWidget(widget, params, "addItems", PARAMETER_ITEM_TEXTS)
+
+    __applyParamToWidget(widget, params, "addItems", PARAMETER_ITEM_TEXTS)
 
     __applyParamToWidget(widget, params, "setCheckable", PARAMETER_CHECKABLE)
     __applyParamToWidget(widget, params, "setChecked", PARAMETER_CHECKED)

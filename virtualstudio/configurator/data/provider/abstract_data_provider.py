@@ -1,5 +1,6 @@
 from typing import List, Callable, Dict, Any
 
+from virtualstudio.common.account_manager.account_info import AccountInfo
 from virtualstudio.common.structs.action.action_info import ActionInfo
 from virtualstudio.common.structs.profile.profile import Profile
 
@@ -10,6 +11,15 @@ class AbstractDataProvider:
         pass
 
     #region Messages
+
+    #region Accounts
+
+    def listAccounts(self, callback: Callable[[bool, List, Dict, Dict], None]):
+        pass
+
+    def setAccountData(self, account: AccountInfo, callback: Callable[[bool, str], None]):
+        pass
+    #endregion
 
     #region Actions
 
