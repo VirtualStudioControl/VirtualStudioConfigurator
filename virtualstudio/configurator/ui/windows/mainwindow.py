@@ -264,7 +264,7 @@ class MainWindow(QMainWindow):
         self.setupAccountUI()
 
     def setupAccountUI(self):
-        #self.accountWidgetStack.setCurrentIndex(0)
+        self.accountWidgetStack.setCurrentIndex(0)
 
         self.account_param_title_edit.textChanged.connect(self.title_cb)
 
@@ -279,7 +279,6 @@ class MainWindow(QMainWindow):
         self.account_param_password_edit.textChanged.connect(self.password_cb)
 
         self.account_add_button.clicked.connect(self._onAddAccountClicked)
-        print("Account UI Callbacks set")
 
     def onAccountDataUpdated(self, success: bool, uuid: str):
         print("Account Updated !", success)
@@ -297,6 +296,7 @@ class MainWindow(QMainWindow):
         if constants.CURRENT_ACCOUNT is None:
             return
         constants.CURRENT_ACCOUNT.accountType = self.account_param_type_combo.currentText()
+        self.account_list_widget.model().reset()
         constants.DATA_PROVIDER.setAccountData(constants.CURRENT_ACCOUNT, self.onAccountDataUpdated)
 
     def server_cb(self):
@@ -349,7 +349,6 @@ class MainWindow(QMainWindow):
         constants.DATA_PROVIDER.setAccountData(account, genAccountUpdate(account))
 
     def onAccountSelectionChanged(self, newItem: QItemSelection, oldItem: QItemSelection):
-        print("Account Selection Changed")
         if len(newItem.indexes()) > 0:
             account: AccountInfo = newItem.indexes().pop(0).data(DATA_ROLE_ACCOUNT_DATA)
             constants.CURRENT_ACCOUNT = account
@@ -362,6 +361,7 @@ class MainWindow(QMainWindow):
     def bindAccountToUI(self, account: AccountInfo):
 
         setValueQLineEditSilent(self.account_param_title_edit, account.accountTitle)
+        setComboTextSilent(self.account_param_type_combo, account.accountType)
         setValueQLineEditSilent(self.account_param_server_address_edit, account.server)
         setValueQSpinSilent(self.account_param_server_port_spin, account.port)
         setValueQLineEditSilent(self.account_param_username_edit, account.username)

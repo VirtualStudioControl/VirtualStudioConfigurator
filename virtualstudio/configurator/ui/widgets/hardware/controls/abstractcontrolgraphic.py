@@ -133,6 +133,7 @@ class AbstractControlGraphic(QGraphicsItem):
                 event.accept()
             else:
                 event.ignore()
+            return
         event.ignore()
 
     def dragLeaveEvent(self, event: QGraphicsSceneDragDropEvent):

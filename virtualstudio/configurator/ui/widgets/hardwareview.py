@@ -51,6 +51,10 @@ class HardwareViewWidget(QGraphicsView):
         # enable dropping
         self.setAcceptDrops(True)
 
+    def canDropMimeData(self, data, action, row, column, parent):
+        return True
+
+
     def updateProfile(self):
         currentProfile = profilemanager.getProfileByName(profilemanager.getCurrentProfileName())
 
