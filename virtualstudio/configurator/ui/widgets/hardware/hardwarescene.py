@@ -82,6 +82,9 @@ class HardwareScene(QGraphicsScene):
 #
 #        self.update()
 
+    def canDropMimeData(self, data, action, row, column, parent):
+        return True
+
     #region Rendering
     def drawBackground(self, painter, rect):
         """

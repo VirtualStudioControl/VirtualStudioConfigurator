@@ -646,6 +646,7 @@ WIDGET_SET_PARAMS: Dict[type, Callable[[QWidget, Dict[str, PRIMITIVE_LISTS]], bo
     QScrollBar: __setParams,
     QSlider: __setParams,
     QSpinBox: __setParams,
+    QStackedWidget: __setParams,
     QTabWidget: __setParams,
     QTimeEdit: __setParams,
     QToolButton: __setParams,

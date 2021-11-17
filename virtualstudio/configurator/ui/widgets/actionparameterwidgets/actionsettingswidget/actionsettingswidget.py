@@ -5,7 +5,7 @@ from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QWidget
 
 from virtualstudio.common.structs.action.action_info import ActionInfo
-from virtualstudio.common.structs.action.action_launcher import UI_TYPE_QTUI, UI_TYPE_INVALID
+from virtualstudio.common.structs.action.action_launcher import UI_TYPE_QTUI, UI_TYPE_INVALID, logengine
 from virtualstudio.common.tools import icontools, actiondatatools
 from virtualstudio.configurator.data import constants
 from virtualstudio.configurator.ui.tools.autom import widgetctrl
@@ -16,10 +16,12 @@ class ActionSettingsWidget(QWidget):
 
     __loadNewUI = pyqtSignal(str, str)
     action: Optional[ActionInfo] = None
+    logger = logengine.getLogger()
 
     def __init__(self, parent=None):
         self.action: Optional[ActionInfo] = None
         super(ActionSettingsWidget, self).__init__(parent=parent)
+
         self.__loadNewUI.connect(self.loadUI)
 
     def clearWidgets(self):
@@ -58,9 +60,7 @@ class ActionSettingsWidget(QWidget):
             try:
                 self.loadUIValues()
             except Exception as ex:
-                print(ex)
-                import traceback
-                traceback.print_exc()
+                self.logger.exception(ex)
 
     def loadQTUI(self, data: bytes):
         buffer = RamFile(data)
@@ -68,15 +68,21 @@ class ActionSettingsWidget(QWidget):
         self.update()
 
     def loadUIValues(self):
+        if self.action is None:
+            return
         gui_values = actiondatatools.getValue(self.action.actionParams, actiondatatools.KEY_GUI)
 
         if gui_values is None:
             return
 
         for name in gui_values:
-            widget = self.__dict__[name]
-            if widget is not None:
-                widgetctrl.setParamsSilent(widget, gui_values[name])
+            try:
+                widget = self.__dict__[name]
+                self.logger.debug("Processing Widget: " + name)
+                if widget is not None:
+                    widgetctrl.setParamsSilent(widget, gui_values[name])
+            except Exception as ex:
+                self.logger.exception(ex)
 
     def __createCallback(self, name, action: Optional[ActionInfo]):
         def __cb():

@@ -50,7 +50,6 @@ class ImagebuttonPreviewScene(QGraphicsScene):
         self.updateImageFromAction()
 
     def onDeviceChanged(self):
-        print("DEVICE CHANGED !")
         device = devicemanager.getDevice(constants.CURRENT_DEVICE)
 
         if devicemanager.hasParameters(device):
@@ -176,6 +175,8 @@ class ImagebuttonPreviewScene(QGraphicsScene):
         return flags
 
     def drawIcon(self) -> None:
+        if self.iconFormat == "":
+            self.onDeviceChanged()
         painter = QPainter()
 
         painter.begin(self.iconImage)
@@ -198,7 +199,6 @@ class ImagebuttonPreviewScene(QGraphicsScene):
         iconBuffer = QBuffer()
 
         mirrored = self.iconImage.mirrored(*self.iconFlip)
-
         mirrored.save(iconBuffer, self.iconFormat)
 
         actionTools.setValue(data=constants.SELECTED_CONTROL.action.actionParams,

@@ -5,12 +5,16 @@ from PyQt5.QtGui import *
 import sys
 import traceback
 
+import config
+
+from virtualstudio.common.logging import logengine
 from virtualstudio.configurator.data import constants
 from virtualstudio.configurator.data.provider.com_data_provider import ComDataProvider
 from virtualstudio.configurator.history.history import History
 from virtualstudio.configurator.ui.windows.mainwindow import MainWindow
 
-def dark ():
+
+def dark():
     """
     Sets the UI Colorsheme to Dark
 
@@ -19,9 +23,14 @@ def dark ():
     dark_palette = QPalette(QColor(53, 53, 53))
     qApp.setPalette(dark_palette)
 
+def initialiseLogging():
+    logengine.LOG_FORMAT = config.LOG_FORMAT
+    logengine.LOG_TO_CONSOLE = config.LOG_TO_CONSOLE
+
 
 if __name__ == "__main__":
     try:
+        initialiseLogging()
         constants.DATA_PROVIDER = ComDataProvider()
         constants.HISTORY = History()
         try:
@@ -36,6 +45,6 @@ if __name__ == "__main__":
             constants.DATA_PROVIDER.close()
 
     except Exception as ex:
-        print("UNHANDLED Exception Occured !")
-        traceback.print_exc()
+        logger = logengine.getLogger()
+        logger.exception(ex)
 #endregion
