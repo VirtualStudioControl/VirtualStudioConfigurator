@@ -23,12 +23,13 @@ def dark():
     dark_palette = QPalette(QColor(53, 53, 53))
     qApp.setPalette(dark_palette)
 
+
 def initialiseLogging():
     logengine.LOG_FORMAT = config.LOG_FORMAT
     logengine.LOG_TO_CONSOLE = config.LOG_TO_CONSOLE
 
 
-if __name__ == "__main__":
+def run():
     try:
         initialiseLogging()
         constants.DATA_PROVIDER = ComDataProvider()
@@ -47,4 +48,9 @@ if __name__ == "__main__":
     except Exception as ex:
         logger = logengine.getLogger()
         logger.exception(ex)
+
+
+if __name__ == "__main__":
+    run()
+
 #endregion
