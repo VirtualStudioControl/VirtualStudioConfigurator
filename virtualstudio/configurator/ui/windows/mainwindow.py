@@ -240,6 +240,8 @@ class MainWindow(QMainWindow):
         constants.DATA_PROVIDER.listDevices(self._setupDevices)
         constants.DATA_PROVIDER.listActions(self._setupActions)
 
+    #endregion
+
     #region Accounts
 
     def _setupAccounts(self, accounts_loaded: bool, accounts: List[Dict[str, Any]],

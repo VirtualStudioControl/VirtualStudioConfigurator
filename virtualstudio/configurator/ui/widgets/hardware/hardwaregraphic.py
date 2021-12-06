@@ -259,12 +259,12 @@ def createXTouchMini():
 
     isActive = True
     for i in range(2):
-        btn = ButtonGraphic(controls, (615, 80 + 40 * i), (30, 20), "{}".format(controls))
+        btn = ButtonGraphic(999+i, (615, 80 + 40 * i), (30, 20), "{}".format(controls))
         btn.isActive = isActive
         btn.setSelectable(False)
         isActive = not isActive
         xtouch.addItem(btn, layer=0)
-        controls += 1
+        #controls += 1
 
     xtouch.addItem(FaderGraphic(controls, (530, 0), (60, 160), (20, 40), 0, 10, "{}".format(controls)), layer=1)
     controls += 1
@@ -280,12 +280,12 @@ def createXTouchMini():
 
     isActive = False
     for i in range(2):
-        btn = ButtonGraphic(controls, (615, 80 + 40 * i), (30, 20), "{}".format(controls))
+        btn = ButtonGraphic(999+i, (615, 80 + 40 * i), (30, 20), "{}".format(controls))
         btn.isActive = isActive
         btn.setSelectable(False)
         isActive = not isActive
         xtouch.addItem(btn, layer=1)
-        controls += 1
+        #controls += 1
 
     xtouch.computeBB()
     return xtouch

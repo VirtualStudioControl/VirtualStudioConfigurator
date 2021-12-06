@@ -1,3 +1,5 @@
+from typing import List, Tuple
+
 from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QColorDialog, QPushButton
@@ -26,8 +28,16 @@ class ColorSelectionButton(QPushButton):
             self.displayColorName = False
             super().setText(text)
 
-    def setColor(self, color: QColor):
+    def color(self):
+        return self.color.getRgbF()
 
+    def setColor(self, color):
+        if type(color) in [list, tuple]:
+            tmp = QColor()
+            tmp.setRgbF(*color)
+            color = tmp
+
+        self.color = color
         lum = 0.3 * color.redF() + 0.59 * color.greenF() + 0.11 * color.blueF()
 
         if lum > 0.5:
