@@ -77,10 +77,11 @@ class ActionSettingsWidget(QWidget):
 
         for name in gui_values:
             try:
-                widget = self.__dict__[name]
-                self.logger.debug("Processing Widget: " + name)
-                if widget is not None:
-                    widgetctrl.setParamsSilent(widget, gui_values[name])
+                if name in self.__dict__:
+                    widget = self.__dict__[name]
+                    self.logger.debug("Processing Widget: " + name)
+                    if widget is not None:
+                        widgetctrl.setParamsSilent(widget, gui_values[name])
             except Exception as ex:
                 self.logger.exception(ex)
 

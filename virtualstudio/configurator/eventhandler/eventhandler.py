@@ -5,9 +5,13 @@ from virtualstudio.common.structs.action.action_info import ActionInfo
 from virtualstudio.common.structs.action.action_info import fromDict as actionInfoFromDict
 from virtualstudio.configurator.profilemanager import profileset_manager
 
-
+#region Parameter Update Event
 def paramUpdateHandler(params: Dict):
     onParamUpdate(actionInfoFromDict(params[consts.EVT_UPDATE_PARAMS_PARAM_ACTION]))
 
 def onParamUpdate (action: ActionInfo):
     profileset_manager.updateActionData(action)
+#endregion
+
+# TODO: File Request Event
+

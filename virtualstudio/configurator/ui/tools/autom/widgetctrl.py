@@ -1,8 +1,14 @@
 from typing import Any, Callable, Dict, List, Union
 
 from PyQt5.QtCore import QDateTime, Qt, QDate, QTime
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QFont, QColor
 from PyQt5.QtWidgets import *
+
+from virtualstudio.common.logging import logengine
+from virtualstudio.configurator.ui.widgets.general.color_selection_button import ColorSelectionButton
+from virtualstudio.configurator.ui.widgets.general.file_selection_button import FileSelectionButton
+
+logger = logengine.getLogger()
 
 PRIMITIVES = Union[bool, float, int, str]
 PRIMITIVE_LISTS = Union[bool, float, int, str, List[PRIMITIVES]]
@@ -349,6 +355,11 @@ PARAMETER_DISPALY_INTEGER_BASE = "displayIntegerBase"
 
 PARAMETER_ITEM_TEXTS = "itemTexts"
 
+PARAMETER_CURRENT_FILE = "currentFile"
+PARAMETER_FILE_CONTENT = "fileContent"
+PARAMETER_FILE_FILTER = "fileFilter"
+
+PARAMETER_COLOR = "color"
 
 #region GetParams
 
@@ -420,6 +431,15 @@ def __getParams(widget: QWidget) -> Dict[str, PRIMITIVE_LISTS]:
     __addParamToDict(widget, ret, "format", PARAMETER_FORMAT)
 
     __addParamToDict(widget, ret, "displayIntegerBase", PARAMETER_DISPALY_INTEGER_BASE)
+
+    __addParamToDict(widget, ret, "displayIntegerBase", PARAMETER_DISPALY_INTEGER_BASE)
+
+    __addParamToDict(widget, ret, "currentFile", PARAMETER_CURRENT_FILE)
+    __addParamToDict(widget, ret, "fileContent", PARAMETER_FILE_CONTENT)
+    __addParamToDict(widget, ret, "filenameFilter", PARAMETER_FILE_FILTER)
+
+    __addParamToDict(widget, ret, "color", PARAMETER_COLOR)
+
     __putItems(widget, ret, PARAMETER_ITEM_TEXTS)
 
     return ret
@@ -483,6 +503,11 @@ def __setParams(widget: QWidget, params: Dict[str, PRIMITIVE_LISTS]) -> bool:
     __applyParamToWidget(widget, params, "setFormat", PARAMETER_FORMAT)
 
     __applyParamToWidget(widget, params, "setDisplayIntegerBase", PARAMETER_DISPALY_INTEGER_BASE)
+
+    __applyParamToWidget(widget, params, "setCurrentFile", PARAMETER_CURRENT_FILE)
+    __applyParamToWidget(widget, params, "setFilenameFilter", PARAMETER_FILE_FILTER)
+
+    __applyParamToWidget(widget, params, "setColor", PARAMETER_COLOR)
 
     return True
 
@@ -556,6 +581,27 @@ def __bindCurrentChanged(widget: QWidget, callback: Callable[[], None]) -> bool:
 
     widget.currentChanged.connect(__callback)
     return True
+
+
+def __bindFileselectorFileChanged(widget: QWidget, callback: Callable[[], None]) -> bool:
+    if not hasattr(widget, "fileselectorfilechanged"):
+        return False
+
+    def __callback():
+        callback()
+
+    widget.fileselectorfilechanged.connect(__callback)
+    return True
+
+def __bindColorChanged(widget: QWidget, callback: Callable[[], None]):
+    if not hasattr(widget, "colorChanged"):
+        return False
+
+    def __callback(color: QColor):
+        callback()
+
+    widget.colorChanged.connect(__callback)
+    return True
 #endregion
 
 #endregion
@@ -624,6 +670,9 @@ WIDGET_GET_PARAMS: Dict[type, Callable[[QWidget], Dict[str, PRIMITIVE_LISTS]]] =
     QTabWidget: __getParams,
     QTimeEdit: __getParams,
     QToolButton: __getParams,
+
+    FileSelectionButton: __getParams,
+    ColorSelectionButton: __getParams,
 }
 
 WIDGET_SET_PARAMS: Dict[type, Callable[[QWidget, Dict[str, PRIMITIVE_LISTS]], bool]] = {
@@ -650,6 +699,9 @@ WIDGET_SET_PARAMS: Dict[type, Callable[[QWidget, Dict[str, PRIMITIVE_LISTS]], bo
     QTabWidget: __setParams,
     QTimeEdit: __setParams,
     QToolButton: __setParams,
+
+    FileSelectionButton: __setParams,
+    ColorSelectionButton: __setParams,
 }
 
 WIDGET_SET_CALLBACK: Dict[type, Callable[[QWidget, Callable[[], None]], bool]] = {
@@ -673,6 +725,9 @@ WIDGET_SET_CALLBACK: Dict[type, Callable[[QWidget, Callable[[], None]], bool]] =
     QTabWidget: __bindCurrentChanged,
     QTimeEdit: __bindDateTimeChanged,
     QToolButton: __bindClicked,
+
+    FileSelectionButton: __bindFileselectorFileChanged,
+    ColorSelectionButton: __bindColorChanged
 }
 
 #endregion
@@ -707,22 +762,31 @@ def setTextSilent(widget: QWidget, value: str) -> bool:
 
 
 def getParams(widget: QWidget) -> Dict[str, PRIMITIVE_LISTS]:
-    if type(widget) not in WIDGET_GET_PARAMS:
-        return {"error": "404 - KEY NOT FOUND"}
-    return WIDGET_GET_PARAMS[type(widget)](widget)
+    try:
+        if type(widget) not in WIDGET_GET_PARAMS:
+            return {"error": "404 - KEY NOT FOUND"}
+        return WIDGET_GET_PARAMS[type(widget)](widget)
+    except Exception as ex:
+        logger.exception(ex)
 
 
 def setParams(widget: QWidget, value: Dict[str, PRIMITIVE_LISTS]) -> bool:
-    if type(widget) not in WIDGET_SET_PARAMS:
-        return False
-    return WIDGET_SET_PARAMS[type(widget)](widget, value)
+    try:
+        if type(widget) not in WIDGET_SET_PARAMS:
+            return False
+        return WIDGET_SET_PARAMS[type(widget)](widget, value)
+    except Exception as ex:
+        logger.exception(ex)
 
 
 def setParamsSilent(widget: QWidget, value: Dict[str, PRIMITIVE_LISTS]) -> bool:
-    widget.blockSignals(True)
-    res = setParams(widget, value)
-    widget.blockSignals(False)
-    return res
+    try:
+        widget.blockSignals(True)
+        res = setParams(widget, value)
+        widget.blockSignals(False)
+        return res
+    except Exception as ex:
+        logger.exception(ex)
 
 
 def setCallback(widget: QWidget, callback: Callable[[], None]):
