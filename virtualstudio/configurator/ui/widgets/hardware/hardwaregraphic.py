@@ -1,11 +1,14 @@
 from typing import Dict, Any, Optional, List
 
+from virtualstudio.common.logging import logengine
 from virtualstudio.common.structs.profile.profile import Profile
 from .controls.abstractcontrolgraphic import AbstractControlGraphic
 from .controls.buttongraphic import ButtonGraphic
 from .controls.imagebuttongraphic import ImageButtonGraphic
 from .controls.rotaryencodergraphic import RotaryEncoderGraphic
 from .controls.fadergraphic import FaderGraphic
+
+logger = logengine.getLogger()
 
 
 class HardwareGraphic:
@@ -88,6 +91,9 @@ class HardwareGraphic:
         self.onUpdate()
 
     def setProfile(self, profile: Profile):
+        if profile is None:
+            logger.fatal("Got Profile which is None !")
+
         for item in self.getItems():
             if item.ident in profile.actions:
                 item._setAction(profile.actions[item.ident])
