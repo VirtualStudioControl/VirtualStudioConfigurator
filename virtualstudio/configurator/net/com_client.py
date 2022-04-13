@@ -2,6 +2,7 @@ import json
 import traceback
 from typing import Callable, Dict, Any
 
+from virtualstudio.common.logging import logengine
 from virtualstudio.common.net.tcp_client import TCPClient
 from virtualstudio.common.net.protocols.virtualstudiocom.constants import *
 
@@ -11,6 +12,8 @@ class ComClient(TCPClient):
         super().__init__(listenAddress, port)
         self.messageCallbacks: Dict[str, Callable[[Any], None]] = {}
         self.eventCallbacks: Dict[str, Callable[[Any], None]] = {}
+
+        self.logger = logengine.getLogger()
 
     def loadRequestHandlers(self):
         pass
@@ -47,7 +50,10 @@ class ComClient(TCPClient):
                     traceback.print_exc()
 
     def sendMessageJSON(self, message: dict, callback: Callable=None):
-        if callback is not None:
-            self.addMessageCallback(message[INTERN_MESSAGE_ID], callback)
-        content = json.dumps(message)
-        self.sendMessage(content.encode("utf-8"))
+        try:
+            if callback is not None:
+                self.addMessageCallback(message[INTERN_MESSAGE_ID], callback)
+            content = json.dumps(message)
+            self.sendMessage(content.encode("utf-8"))
+        except Exception as ex:
+            self.logger.exception(ex)

@@ -75,6 +75,12 @@ class HardwareViewWidget(QGraphicsView):
         self.generateHardwareWidgetContent()
 
     def generateHardwareWidgetContent(self):
+        if self.device['identifier'] not in self.deviceSettingsDict:
+            settings = {}
+            if self.hardware.layers > 1:
+                settings[SETTING_LAYER_INDEX] = 0
+            self.deviceSettingsDict[self.device['identifier']] = settings
+
         if self.hardware.name in self.hardwarePageDict:
             self.hardware_widget.setCurrentIndex(self.hardwarePageDict[self.hardware.name])
             self.setDeviceSettings()
@@ -84,7 +90,7 @@ class HardwareViewWidget(QGraphicsView):
         layout: QGridLayout = QGridLayout()
 
         layout.addWidget(QWidget(), 0, 0)
-        settings = {}
+
         widgetdict: Dict[str, QWidget] = {}
 
         if self.hardware.layers > 1:
@@ -100,13 +106,12 @@ class HardwareViewWidget(QGraphicsView):
             layer_combo.currentIndexChanged.connect(self.onLayerChanged)
 
             widgetdict[WIDGET_LAYER_COMBO] = layer_combo
-            settings[SETTING_LAYER_INDEX] = 0
+
 
         layout.setContentsMargins(0,0,0,0)
 
         widget.setLayout(layout)
 
-        self.deviceSettingsDict[self.device['identifier']] = settings
         self.hardware_widget_dict[self.hardware.name] = widgetdict
         self.hardwarePageDict[self.hardware.name] = self.hardware_widget.insertWidget(len(self.hardwarePageDict), widget)
         self.hardware_widget.setCurrentIndex(self.hardwarePageDict[self.hardware.name])

@@ -13,7 +13,7 @@ from virtualstudio.common.net.protocols.virtualstudiocom import client as req
 
 class ComDataProvider(AbstractDataProvider):
 
-    def __init__(self, coreAddress: str = "127.0.0.1", core_port: int = 4233):
+    def __init__(self, coreAddress: str = "127.0.0.1", core_port: int = 4233): #"192.168.114.105" "127.0.0.1" "172.24.2.159"
         super().__init__()
         self.client = ComClient(coreAddress, core_port)
         self.client.start()

@@ -93,6 +93,7 @@ class HardwareGraphic:
     def setProfile(self, profile: Profile):
         if profile is None:
             logger.fatal("Got Profile which is None !")
+            return
 
         for item in self.getItems():
             if item.ident in profile.actions:

@@ -104,18 +104,11 @@ def updateActionData(action: ActionInfo):
             updateActionData(action)
 
         NEXT_PROFILE_STATE.appendToBacklog(__wrapBacklog)
-        print("Deffered Updated Action:", action.actionParams)
         return
 
-    print("Try Updated Action:", action.actionParams)
     if CURRENT_PROFILE_SET is not None:
-        print("Valid Profile set found")
         if CURRENT_PROFILE_SET.hardwareFamily != action.deviceFamily:
-            print("Hardware Family does not match", CURRENT_PROFILE_SET.hardwareFamily, action.deviceFamily)
             return
 
         profile = CURRENT_PROFILE_SET.getProfile(action.profileName)
         profile.updateActionData(action.control, action.actionParams)
-
-        print("Updated Action:", action.actionParams)
-

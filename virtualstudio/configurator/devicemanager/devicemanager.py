@@ -1,6 +1,10 @@
 from typing import Tuple
 
+from virtualstudio.common.logging import logengine
+
 DEVICES = {}
+
+logger = logengine.getLogger()
 
 
 def appendDevice(device: dict):
@@ -14,7 +18,10 @@ def appendDevices(devices: list):
 
 
 def getDevice(identifier: str):
-    return DEVICES[identifier]
+    try:
+        return DEVICES[identifier]
+    except Exception as ex:
+        logger.exception(ex)
 
 
 def getType(device: dict):
@@ -28,8 +35,10 @@ def getName(device: dict):
 def getManufacturer(device: dict):
     return device["manufacturer"]
 
+
 def getFamily(device: dict):
     return "{} {}".format(getManufacturer(device), getName(device))
+
 
 def getIdentifier(device: dict):
     return device["identifier"]
@@ -45,6 +54,7 @@ def setCurrentProfile(device: dict, profileName: str):
 
 def hasParameters(device):
     return ("parameters" in device)
+
 
 def getParameterIconResolution(device, default: Tuple[int, int] = None):
     if not hasParameters(device):

@@ -11,6 +11,7 @@ from ..widgets.accounts.editor.accounteditor import AccountEditor
 from ..widgets.accounts.model.accountmodel import AccountModel, DATA_ROLE_ACCOUNT_DATA
 from ..widgets.accounts.view.accountview import AccountView
 from ..widgets.general.color_selection_button import ColorSelectionButton
+from ...data.actions import action_manager
 from ...profilemanager import profileset_manager as ProfilesetManager
 from ...devicemanager import devicemanager
 
@@ -283,12 +284,11 @@ class MainWindow(QMainWindow):
         self.account_add_button.clicked.connect(self._onAddAccountClicked)
 
     def onAccountDataUpdated(self, success: bool, uuid: str):
-        print("Account Updated !", success)
+        logger.debug("Account {} Updated: {}".format(uuid, success))
 
     def title_cb(self):
-        print("Title Changed")
         if constants.CURRENT_ACCOUNT is None:
-            print("Current Account is None")
+            logger.debug("Current Account is None")
             return
         constants.CURRENT_ACCOUNT.accountTitle = self.account_param_title_edit.text()
         self.account_list_widget.model().reset()
@@ -394,9 +394,15 @@ class MainWindow(QMainWindow):
             self.controlConfigurationRoot.setCurrentIndex(CONTROL_WIDGET_TYPES[control.getType()])
             self.updateControlWidgets(control)
             self.actionSettingsRootWidget.setCurrentIndex(1)
+            self.actionSettingsDock : CloseableDock
+
+            action = action_manager.getActionByID(control.action.launcher)
+            self.actionSettingsDock.setWindowTitle("Action Settings - {}".format(action.name))
+
         else:
             self.actionSettingsRootWidget.setCurrentIndex(0)
             self.actionSettingWidget.setAction(None)
+            self.actionSettingsDock.setWindowTitle("Action Settings")
 
     def __onStateChanged(self, state: int):
         try:
@@ -963,7 +969,7 @@ class MainWindow(QMainWindow):
 
         for d in devices:
             devicemanager.appendDevice(d)
-            self.combo_device.addItem("{} {}".format(d['manufacturer'], d['name']), userData=d["identifier"])
+            self.combo_device.addItem(d['label'], userData=d["identifier"])
         self.combo_device.update()
 
         self.combo_device.currentTextChanged.connect(self.__setHardwareOnce)
@@ -976,13 +982,13 @@ class MainWindow(QMainWindow):
         try:
             constants.HISTORY.addItem(ActionValueChanged(func=self.__setHardwareSilent,
                                                          old=self.combo_device_prev_value, new=text))
+
+            self.combo_device_prev_value = text
+            self.__setHardware(text)
+
+            self.action_imagebutton_image_preview.onDeviceChanged()
         except Exception as ex:
-            print(ex)
-
-        self.combo_device_prev_value = text
-        self.__setHardware(text)
-
-        self.action_imagebutton_image_preview.onDeviceChanged()
+            logger.exception(ex)
 
     def __setHardwareSilent(self, text: str):
         setComboTextSilent(self.combo_device, text)
@@ -1015,12 +1021,15 @@ class MainWindow(QMainWindow):
     def __profileChanged(self, profileName):
         def __profileChangedCB(success):
             pass
-        constants.DATA_PROVIDER.setCurrentProfile(constants.CURRENT_DEVICE, profileName,
+        try:
+            constants.DATA_PROVIDER.setCurrentProfile(constants.CURRENT_DEVICE, profileName,
                                                   __profileChangedCB)
-        ProfilesetManager.setCurrentProfile(profileName)
-        data = self.combo_device.currentData(DEVICE_DATA_ROLE)
-        devicemanager.setCurrentProfile(devicemanager.getDevice(data), profileName)
-        self.deviceView.updateProfile()
+            ProfilesetManager.setCurrentProfile(profileName)
+            data = self.combo_device.currentData(DEVICE_DATA_ROLE)
+            devicemanager.setCurrentProfile(devicemanager.getDevice(data), profileName)
+            self.deviceView.updateProfile()
+        except Exception as ex:
+            logger.exception(ex)
 
     def __changeProfile(self, profileName):
         setComboTextSilent(self.combo_profile, profileName)
