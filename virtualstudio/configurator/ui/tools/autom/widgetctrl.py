@@ -67,13 +67,15 @@ def __addParamToDict(widget: QWidget, dict: Dict[str, PRIMITIVE_LISTS], function
 def __applyParamToWidget(widget: QWidget, dict: Dict[str, PRIMITIVE_LISTS], functionName,
                          paramName, paramType: type = None,
                          args=None) -> None:
-    if paramName not in dict or dict[paramName] is None:
-        return
-    if args is None:
-        args = []
-    if __hasMethod(widget, functionName):
-        widget.__getattribute__(functionName)(__fromPrimitive(paramType, dict[paramName]), *args)
-
+    try:
+        if paramName not in dict or dict[paramName] is None:
+            return
+        if args is None:
+            args = []
+        if __hasMethod(widget, functionName):
+            widget.__getattribute__(functionName)(__fromPrimitive(paramType, dict[paramName]), *args)
+    except Exception as ex:
+        logger.exception(ex)
 
 def __applyParamToWidgetNullable(widget: QWidget, dict: Dict[str, PRIMITIVE_LISTS], functionName,
                                  functionNameNullable,
@@ -736,10 +738,13 @@ WIDGET_SET_CALLBACK: Dict[type, Callable[[QWidget, Callable[[], None]], bool]] =
 
 
 def setValue(widget: QWidget, value: Any) -> bool:
-    if type(widget) not in WIDGET_SET_VALUE:
-        return False
-    return WIDGET_SET_VALUE[type(widget)](widget, value)
-
+    try:
+        if type(widget) not in WIDGET_SET_VALUE:
+            logger.debug(str(type(widget)) + " not found in WIDGET_SET_VALUE")
+            return False
+        return WIDGET_SET_VALUE[type(widget)](widget, value)
+    except Exception as ex:
+        logger.exception(ex)
 
 def setValueSilent(widget: QWidget, value: Any) -> bool:
     widget.blockSignals(True)
@@ -749,10 +754,13 @@ def setValueSilent(widget: QWidget, value: Any) -> bool:
 
 
 def setText(widget: QWidget, value: str) -> bool:
-    if type(widget) not in WIDGET_SET_VALUE:
-        return False
-    return WIDGET_SET_TEXT[type(widget)](widget, value)
-
+    try:
+        if type(widget) not in WIDGET_SET_VALUE:
+            logger.debug(str(type(widget)) + " not found in WIDGET_SET_VALUE")
+            return False
+        return WIDGET_SET_TEXT[type(widget)](widget, value)
+    except Exception as ex:
+        logger.exception(ex)
 
 def setTextSilent(widget: QWidget, value: str) -> bool:
     widget.blockSignals(True)
@@ -764,6 +772,7 @@ def setTextSilent(widget: QWidget, value: str) -> bool:
 def getParams(widget: QWidget) -> Dict[str, PRIMITIVE_LISTS]:
     try:
         if type(widget) not in WIDGET_GET_PARAMS:
+            logger.debug(str(type(widget)) + " not found in WIDGET_GET_PARAMS")
             return {"error": "404 - KEY NOT FOUND"}
         return WIDGET_GET_PARAMS[type(widget)](widget)
     except Exception as ex:
@@ -773,6 +782,7 @@ def getParams(widget: QWidget) -> Dict[str, PRIMITIVE_LISTS]:
 def setParams(widget: QWidget, value: Dict[str, PRIMITIVE_LISTS]) -> bool:
     try:
         if type(widget) not in WIDGET_SET_PARAMS:
+            logger.debug(str(type(widget)) + " not found in WIDGET_SET_PARAMS")
             return False
         return WIDGET_SET_PARAMS[type(widget)](widget, value)
     except Exception as ex:
@@ -790,8 +800,11 @@ def setParamsSilent(widget: QWidget, value: Dict[str, PRIMITIVE_LISTS]) -> bool:
 
 
 def setCallback(widget: QWidget, callback: Callable[[], None]):
-    if type(widget) not in WIDGET_SET_CALLBACK:
-        return False
-    return WIDGET_SET_CALLBACK[type(widget)](widget, callback)
-
+    try:
+        if type(widget) not in WIDGET_SET_CALLBACK:
+            logger.debug(str(type(widget)) + " not found in WIDGET_SET_CALLBACK")
+            return False
+        return WIDGET_SET_CALLBACK[type(widget)](widget, callback)
+    except Exception as ex:
+        logger.exception(ex)
 #endregion

@@ -53,6 +53,7 @@ class ActionSettingsWidget(QWidget):
             return
 
         if type == UI_TYPE_QTUI:
+            self.logger.info("Loading QTUI")
             self.loadQTUI(icontools.decodeIconData(data))
             self.connectCallbacks()
 
@@ -64,15 +65,21 @@ class ActionSettingsWidget(QWidget):
 
     def loadQTUI(self, data: bytes):
         buffer = RamFile(data)
-        uic.loadUi(buffer, self)
-        self.update()
+        try:
+            uic.loadUi(buffer, self)
+            self.update()
+        except Exception as ex:
+            self.logger.exception(ex)
 
     def loadUIValues(self):
         if self.action is None:
+            self.logger.info("Action is None")
             return
+
         gui_values = actiondatatools.getValue(self.action.actionParams, actiondatatools.KEY_GUI)
 
         if gui_values is None:
+            self.logger.info("GUI Values is None")
             return
 
         for name in gui_values:
@@ -82,6 +89,8 @@ class ActionSettingsWidget(QWidget):
                     self.logger.debug("Processing Widget: " + name)
                     if widget is not None:
                         widgetctrl.setParamsSilent(widget, gui_values[name])
+                    else:
+                        self.logger.info("GUI Widget is None")
             except Exception as ex:
                 self.logger.exception(ex)
 

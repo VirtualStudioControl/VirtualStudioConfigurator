@@ -6,6 +6,7 @@ import sys
 import traceback
 
 import config
+import faulthandler
 
 from virtualstudio.common.logging import logengine
 from virtualstudio.configurator.data import constants
@@ -30,9 +31,10 @@ def initialiseLogging():
 
 
 def run():
+    faulthandler.enable(True)
     try:
         initialiseLogging()
-        constants.DATA_PROVIDER = ComDataProvider()
+        constants.DATA_PROVIDER = ComDataProvider(coreAddress="127.0.0.1") # "127.0.0.1"
         constants.HISTORY = History()
         try:
             app = QApplication(sys.argv)

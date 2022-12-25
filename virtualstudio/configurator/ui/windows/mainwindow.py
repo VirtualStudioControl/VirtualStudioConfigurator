@@ -387,7 +387,7 @@ class MainWindow(QMainWindow):
         self.action_list_widget.setItemDelegateForColumn(0, ActionWidget(self.action_list_widget, categoryIcons))
 
     def __onActionItemSelectionChanged(self, control: AbstractControlGraphic):
-
+        logger.info("Executing")
         constants.SELECTED_CONTROL = control
 
         if control is not None and control.action is not None:
@@ -587,7 +587,7 @@ class MainWindow(QMainWindow):
         prevVal = QFont(actiondatatools.getValueOrDefault(constants.SELECTED_CONTROL.action.actionParams,
                                            actiondatatools.KEY_STATE_IMAGEBUTTON_TEXT_FONT,
                                            self.state_display_widget.currentState,
-                                           default_values.IMAGEBUTTON_TEXT_FONT), self.font().pointSizeF())
+                                           default_values.IMAGEBUTTON_TEXT_FONT), int(self.font().pointSize()))
 
         constants.HISTORY.addItem(ActionValueChanged(func=__history,
                                                      old=prevVal,
@@ -901,7 +901,7 @@ class MainWindow(QMainWindow):
         setComboFontSilent(self.label_control_imagebutton_font, QFont(actiondatatools.getValueOrDefault(constants.SELECTED_CONTROL.action.actionParams,
                                               actiondatatools.KEY_STATE_IMAGEBUTTON_TEXT_FONT,
                                               self.state_display_widget.currentState,
-                                              default_values.IMAGEBUTTON_TEXT_FONT), self.font().pointSizeF()))
+                                              default_values.IMAGEBUTTON_TEXT_FONT), int(self.font().pointSize())))
 
         setButtonCheckedSilent(self.label_control_imagebutton_font_bold, actiondatatools.getValueOrDefault(constants.SELECTED_CONTROL.action.actionParams,
                                               actiondatatools.KEY_STATE_IMAGEBUTTON_TEXT_BOLD,

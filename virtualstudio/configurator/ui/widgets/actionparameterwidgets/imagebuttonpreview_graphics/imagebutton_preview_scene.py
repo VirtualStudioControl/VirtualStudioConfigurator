@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QGraphicsScene
 
 from virtualstudio.common.io import filewriter
 from virtualstudio.common.io.filewriter import readFileBinary
+from virtualstudio.common.logging import logengine
 
 from virtualstudio.common.tools import actiondatatools as actionTools, actiondatatools
 from virtualstudio.common.tools import icontools
@@ -29,6 +30,7 @@ class ImagebuttonPreviewScene(QGraphicsScene):
 
     def __init__(self, parent: QObject = None):
         super().__init__(parent)
+        self.logger = logengine.getLogger()
 
         self.setBackgroundBrush(Qt.black)
 
@@ -61,9 +63,7 @@ class ImagebuttonPreviewScene(QGraphicsScene):
             try:
                 self.iconImage = QImage(*iconResolution, QImage.Format_RGB32)
             except Exception as ex:
-                import traceback
-                print(ex)
-                traceback.print_exc()
+                self.logger.exception(ex)
 
 
     def updateImageFromAction(self):
@@ -120,7 +120,7 @@ class ImagebuttonPreviewScene(QGraphicsScene):
                                               self.currentState,
                                               default_values.IMAGEBUTTON_TEXT_FONTSIZE)
 
-        self.currentFont = QFont(fontFamily, float(pointSize))
+        self.currentFont = QFont(fontFamily, int(pointSize))
 
         self.currentFont.setBold(actiondatatools.getValueOrDefault(constants.SELECTED_CONTROL.action.actionParams,
                                               actiondatatools.KEY_STATE_IMAGEBUTTON_TEXT_BOLD,
@@ -218,7 +218,9 @@ class ImagebuttonPreviewScene(QGraphicsScene):
 
 
     def drawForeground(self, painter: QPainter, rect: QRectF) -> None:
-        painter.drawImage(rect.x(), rect.y(),
-                          self.iconImage.scaled(rect.width(), rect.height(), Qt.KeepAspectRatio,
-                                                   Qt.SmoothTransformation),
-                          0, 0, rect.width(), rect.height())
+        try:
+            painter.drawImage(rect,
+                          self.iconImage.scaled(int(rect.width()), int(rect.height()), Qt.KeepAspectRatio,
+                                                   Qt.SmoothTransformation))
+        except Exception as ex:
+            self.logger.exception(ex)

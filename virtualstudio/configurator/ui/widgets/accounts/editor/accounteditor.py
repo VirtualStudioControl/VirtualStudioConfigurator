@@ -88,7 +88,7 @@ class AccountEditor(QStyledItemDelegate):
 
         painter.setFont(font)
 
-        text_offset = ((h / 2)) // 2
+        text_offset = int(((h / 2)) // 2)
 
         painter.drawText(x + 32 + (icon_offset * 2), y + text_offset, w - (x + 32 + (icon_offset * 3)), 20, 0,
                          account.accountTitle)

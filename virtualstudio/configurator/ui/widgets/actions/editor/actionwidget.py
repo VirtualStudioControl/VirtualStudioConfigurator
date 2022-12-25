@@ -9,6 +9,8 @@ from PyQt5.QtWidgets import QStyleOptionViewItem
 from .....structs.action import Action
 from ..model.actionmodel import DATA_ROLE_ACTION_DATA, DATA_ROLE_CATEGORY_DATA
 
+from virtualstudio.common.logging import logengine
+
 class ActionWidget(QStyledItemDelegate):
     
     def __init__(self, view: QTreeView, categoryIcons: list, parent=None):
@@ -22,6 +24,8 @@ class ActionWidget(QStyledItemDelegate):
 
         self.brushCathegoryBg = QBrush(QColor(53, 53, 53, 75))
         self.brushActionBg = QBrush(QColor(25, 25, 25, 127))
+
+        self.logger = logengine.getLogger()
 
     def decodeIcon(self, data):
         rawIcon = base64.b64decode(data.encode("utf-8"))
@@ -44,10 +48,13 @@ class ActionWidget(QStyledItemDelegate):
 
     def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex):
         actionData = index.data(role=DATA_ROLE_ACTION_DATA)
-        if actionData is not None:
-            self.paintAction(painter, option, index, actionData)
-        else:
-            self.paintCategory(painter, option, index, index.data())
+        try:
+            if actionData is not None:
+                self.paintAction(painter, option, index, actionData)
+            else:
+                self.paintCategory(painter, option, index, index.data())
+        except Exception as ex:
+            self.logger.exception(ex)
 
     def paintAction(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex, action: Action):
         x = option.rect.x()
@@ -72,7 +79,7 @@ class ActionWidget(QStyledItemDelegate):
 
         painter.setFont(font)
 
-        text_offset = ((h/2)) // 2
+        text_offset = int(((h/2)) // 2)
 
         painter.drawText(x + 32 + (icon_offset * 2), y + text_offset, w - (x + 32 + (icon_offset * 3)), 20, 0, action.name)
         painter.setPen(QPen(Qt.gray))
