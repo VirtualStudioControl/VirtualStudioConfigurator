@@ -8,3 +8,4 @@ test/*
 __pychache__/*
 *.spec
 *.device.json
+virtualstudio.log
